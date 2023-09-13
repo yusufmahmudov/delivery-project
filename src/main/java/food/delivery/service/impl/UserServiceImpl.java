@@ -156,31 +156,4 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public ResponseEntity<?> uploadImage(MultipartFile multipartFile) {
-        Long id = SecurityUtil.getUserDto().getId();
-        User user = userRepository.findById(id).get();
-
-//        Long imageId = user.getImageId();
-
-        ImageDto image = (ImageDto) imageService
-                .addImage(multipartFile, "user image").getBody();
-
-//        assert image != null;
-//        user.setImagePath(image.getImagePath());
-//        user.setImageId(image.getId());
-//
-//        userRepository.save(user);
-//
-//        if (imageId != null) {
-//            boolean check = (boolean) imageService.deleteImage(imageId).getBody();
-//            if (!check) {
-//                return ResponseEntity.internalServerError().body("Old image not deleted");
-//            }
-//        }
-
-        return ResponseEntity.accepted().body(image);
-    }
-
-
 }

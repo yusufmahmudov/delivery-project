@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-09-12T19:32:08+0500",
+    date = "2023-09-13T19:07:16+0500",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 20.0.2 (Oracle Corporation)"
 )
 @Component
@@ -46,6 +46,7 @@ public class FilialMapperImpl implements FilialMapper {
         if ( list != null ) {
             filialDto.employees( new ArrayList<Integer>( list ) );
         }
+        filialDto.imagePath( filial.getImagePath() );
         filialDto.active( filial.getActive() );
 
         return filialDto.build();
@@ -74,6 +75,7 @@ public class FilialMapperImpl implements FilialMapper {
         filial.humanCapacity( filialDto.getHumanCapacity() );
         filial.phoneNum( filialDto.getPhoneNum() );
         filial.adminId( filialDto.getAdminId() );
+        filial.imagePath( filialDto.getImagePath() );
         List<Integer> list = filialDto.getEmployees();
         if ( list != null ) {
             filial.employees( new ArrayList<Integer>( list ) );

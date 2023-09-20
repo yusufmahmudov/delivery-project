@@ -32,7 +32,7 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_MODERATOR')")
     @Operation(summary = "'id' bo'yicha 1ta user ma'lumotlarni chiqarish", tags = {"user", "get"})
     @GetMapping("/by-id")
     public ResponseDto<UserDto> getById() {

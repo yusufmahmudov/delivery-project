@@ -181,6 +181,7 @@ public class AuthServiceImpl implements AuthService {
             employee = employeeRepository.findByPhoneNum1(phone).get();
             employee.setToolWord(code);
             employee.setPassword(passwordEncoder.encode(salt + code));
+            employee.setUsername("employee_" + salt + "_" + phone);
             employee.setSalt(salt);
         } else {
             Set<Role> roles = new HashSet<>();
@@ -224,7 +225,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseDto<JwtResponse> loginEmployee(LoginDto loginDto) {
 
-        String username = "employee_" + loginDto.getUsername().toLowerCase();
+        String username = "employee_" + loginDto.getUsername();
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, loginDto.getPassword()));
@@ -269,6 +270,7 @@ public class AuthServiceImpl implements AuthService {
 
         if (userRepository.existsByPhoneNum1(phone)) {
             user = userRepository.findByPhoneNum1(phone).get();
+            user.setUsername("user_" + salt + "_" + phone);
             user.setToolWord(code);
             user.setPassword(passwordEncoder.encode(salt + code));
             user.setSalt(salt);

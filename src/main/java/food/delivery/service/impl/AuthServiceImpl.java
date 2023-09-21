@@ -126,12 +126,12 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public ResponseEntity<?> roleForEmployee(Integer employeeId, Set<String> roles) {
+    public ResponseEntity<?> roleForEmployee(Integer employeeId, List<String> roles) {
         Employee employee = employeeRepository.findById(employeeId).get();
         Set<Role> roleSet = new HashSet<>();
 
-        roles.forEach(role -> {
-            switch (role) {
+        for (String s : roles) {
+            switch (s) {
                 case "admin" -> {
                     Role adminRole = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -147,12 +147,32 @@ public class AuthServiceImpl implements AuthService {
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roleSet.add(courierRole);
                 }
-                default -> {
-                    Role userRole = roleRepository.findByName(SecurityUtil.ROLE_USER)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                }
             }
-        });
+        }
+
+//        roles.forEach(role -> {
+//            switch (role) {
+//                case "admin" -> {
+//                    Role adminRole = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
+//                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                    roleSet.add(adminRole);
+//                }
+//                case "mod" -> {
+//                    Role modRole = roleRepository.findByName(SecurityUtil.MODERATOR)
+//                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                    roleSet.add(modRole);
+//                }
+//                case "courier" -> {
+//                    Role courierRole = roleRepository.findByName(SecurityUtil.ROLE_COURIER)
+//                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                    roleSet.add(courierRole);
+//                }
+//                default -> {
+//                    Role userRole = roleRepository.findByName(SecurityUtil.ROLE_USER)
+//                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                }
+//            }
+//        });
 
         employee.setRoles(roleSet);
         employeeRepository.save(employee);

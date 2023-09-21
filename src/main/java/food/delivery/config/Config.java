@@ -45,7 +45,7 @@ public class Config {
         role3.setId(3);
         roleRepository.save(role3);
 
-        role4.setName("MODERATOR");
+        role4.setName("ROLE_MODERATOR");
         role4.setId(4);
         roleRepository.save(role4);
 

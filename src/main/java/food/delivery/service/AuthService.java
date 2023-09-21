@@ -5,11 +5,12 @@ import food.delivery.dto.response.JwtResponse;
 import food.delivery.dto.response.ResponseDto;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Set;
 
 public interface AuthService {
 
-    ResponseEntity<?> roleForEmployee(Integer employeeId, Set<String> roles);
+    ResponseEntity<?> roleForEmployee(Integer employeeId, List<String> roles);
 
     ResponseEntity<?> createEmployeeAccount(String phone);
 

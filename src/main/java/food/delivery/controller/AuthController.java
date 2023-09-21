@@ -31,7 +31,7 @@ public class AuthController {
     @PatchMapping("/role-employee")
     public ResponseEntity<?> roleForEmployee(
             @RequestParam @NotNull Integer employeeId,
-            @RequestParam @NotNull Set<String> roles) {
+            @RequestParam @NotNull List<String> roles) {
         return authService.roleForEmployee(employeeId, roles);
     }
 

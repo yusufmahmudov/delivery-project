@@ -237,11 +237,11 @@ public class AuthServiceImpl implements AuthService {
         LoginDto loginDto = new LoginDto();
         loginDto.setUsername(salt + "_" + phone);
         loginDto.setPassword(salt + code);
-        String token = loginEmployee(loginDto).getData().getToken();
+        JwtResponse response = loginEmployee(loginDto).getData();
 
         employeeRepository.save(employee);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
 

@@ -1,6 +1,7 @@
 package food.delivery.service.impl;
 
 import food.delivery.dto.EmployeeDto;
+import food.delivery.dto.EmployeeRole;
 import food.delivery.dto.LoginDto;
 import food.delivery.dto.template.UserDetailsDto;
 import food.delivery.dto.response.JwtResponse;
@@ -126,8 +127,10 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public ResponseEntity<?> roleForEmployee(Integer employeeId, List<String> roles) {
-        Employee employee = employeeRepository.findById(employeeId).get();
+    public ResponseEntity<?> roleForEmployee(EmployeeRole employeeRole) {
+        Integer id = employeeRole.getEmployeeId();
+        List<String> roles = employeeRole.getRoles();
+        Employee employee = employeeRepository.findById(id).get();
         Set<Role> roleSet = new HashSet<>();
 
         for (String s : roles) {

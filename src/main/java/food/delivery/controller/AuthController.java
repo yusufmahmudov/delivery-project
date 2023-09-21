@@ -1,5 +1,6 @@
 package food.delivery.controller;
 
+import food.delivery.dto.EmployeeRole;
 import food.delivery.dto.ProductDto;
 import food.delivery.service.AuthService;
 import food.delivery.service.ProductService;
@@ -30,9 +31,8 @@ public class AuthController {
             "admin, mod, courier", tags = {"auth", "patch"})
     @PatchMapping("/role-employee")
     public ResponseEntity<?> roleForEmployee(
-            @RequestParam @NotNull Integer employeeId,
-            @RequestParam @NotNull List<String> roles) {
-        return authService.roleForEmployee(employeeId, roles);
+            @RequestParam("abuAsbob") @NotNull EmployeeRole employeeRole) {
+        return authService.roleForEmployee(employeeRole);
     }
 
 

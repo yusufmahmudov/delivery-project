@@ -1,5 +1,6 @@
 package food.delivery.service;
 
+import food.delivery.dto.EmployeeRole;
 import food.delivery.dto.LoginDto;
 import food.delivery.dto.response.JwtResponse;
 import food.delivery.dto.response.ResponseDto;
@@ -10,7 +11,7 @@ import java.util.Set;
 
 public interface AuthService {
 
-    ResponseEntity<?> roleForEmployee(Integer employeeId, List<String> roles);
+    ResponseEntity<?> roleForEmployee(EmployeeRole employeeRole);
 
     ResponseEntity<?> createEmployeeAccount(String phone);
 

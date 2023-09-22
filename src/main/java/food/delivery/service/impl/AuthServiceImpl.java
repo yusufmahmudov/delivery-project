@@ -3,6 +3,7 @@ package food.delivery.service.impl;
 import food.delivery.dto.EmployeeDto;
 import food.delivery.dto.EmployeeRole;
 import food.delivery.dto.LoginDto;
+import food.delivery.dto.UserDto;
 import food.delivery.dto.template.UserDetailsDto;
 import food.delivery.dto.response.JwtResponse;
 import food.delivery.dto.response.ResponseDto;
@@ -185,7 +186,8 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public ResponseEntity<?> createEmployeeAccount(String phone) {
+    public ResponseEntity<?> createEmployeeAccount(EmployeeDto employeeDto) {
+        String phone = employeeDto.getPhoneNum1();
         boolean isValid = StringHelper.isValidPhoneNumber(phone);
         if (!isValid) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid phone number");
@@ -225,7 +227,9 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public ResponseEntity<?> loginEmployeeCheckCode(String phone, String code) {
+    public ResponseEntity<?> loginEmployeeCheckCode(EmployeeDto employeeDto) {
+        String phone = employeeDto.getPhoneNum1();
+        String code = employeeDto.getCode();
         Employee employee = employeeRepository.findByPhoneNum1(phone).get();
         String temp = employee.getToolWord();
         String salt = employee.getSalt();
@@ -275,7 +279,9 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public ResponseEntity<?> createUserAccount(String phone, Long tgId) {
+    public ResponseEntity<?> createUserAccount(UserDto userDto) {
+        String phone = userDto.getPhoneNum1();
+        Long tgId = userDto.getTgId();
 
         boolean isValid = StringHelper.isValidPhoneNumber(phone);
         if (!isValid) {
@@ -324,7 +330,9 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public ResponseEntity<?> loginUserCheckCode(String phone, String code) {
+    public ResponseEntity<?> loginUserCheckCode(UserDto userDto) {
+        String phone = userDto.getPhoneNum1();
+        String code = userDto.getCode();
 
         User user = userRepository.findByPhoneNum1(phone).get();
         String temp = user.getToolWord();

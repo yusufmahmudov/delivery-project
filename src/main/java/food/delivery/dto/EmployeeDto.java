@@ -75,6 +75,10 @@ public class EmployeeDto {
     private String gender;
 
 
+    @Schema(description = "code")
+    private String code;
+
+
     @Schema(description = "Xodimning ish o'rni. ADMIN, COURIER",
             accessMode = Schema.AccessMode.READ_WRITE, required = true)
     @Size(max = 20, message = "length max 20")

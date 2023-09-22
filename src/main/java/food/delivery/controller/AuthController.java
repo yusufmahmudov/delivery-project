@@ -1,7 +1,9 @@
 package food.delivery.controller;
 
+import food.delivery.dto.EmployeeDto;
 import food.delivery.dto.EmployeeRole;
 import food.delivery.dto.ProductDto;
+import food.delivery.dto.UserDto;
 import food.delivery.service.AuthService;
 import food.delivery.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,8 +42,8 @@ public class AuthController {
             tags = {"auth", "post"})
     @PostMapping("/sign/employee")
     public ResponseEntity<?> createEmployeeAccount(
-            @RequestParam @NotNull String phone) {
-        return authService.createEmployeeAccount(phone);
+            @RequestBody @NotNull EmployeeDto employeeDto) {
+        return authService.createEmployeeAccount(employeeDto);
     }
 
 
@@ -49,9 +51,8 @@ public class AuthController {
             tags = {"auth", "post"})
     @PostMapping("send-code/employee")
     public ResponseEntity<?> loginEmployeeCheckCode(
-            @RequestParam @NotNull String phone,
-            @RequestParam @NotNull String code) {
-        return authService.loginEmployeeCheckCode(phone, code);
+            @RequestBody @NotNull EmployeeDto employeeDto) {
+        return authService.loginEmployeeCheckCode(employeeDto);
     }
 
 
@@ -59,10 +60,9 @@ public class AuthController {
             tags = {"auth", "post"})
     @PostMapping("/sign/user")
     public ResponseEntity<?> createAccount(
-            @RequestParam @NotNull String phone,
-            @RequestParam Long tgId
+            @RequestBody @NotNull UserDto userDto
     ) {
-        return authService.createUserAccount(phone, tgId);
+        return authService.createUserAccount(userDto);
     }
 
 
@@ -70,9 +70,8 @@ public class AuthController {
             tags = {"auth", "post"})
     @PostMapping("/send-code/user")
     public ResponseEntity<?> loginUserCheckCode(
-            @RequestParam @NotNull String phone,
-            @RequestParam @NotNull String code) {
-        return authService.loginUserCheckCode(phone, code);
+            @RequestBody @NotNull UserDto userDto) {
+        return authService.loginUserCheckCode(userDto);
     }
 
 

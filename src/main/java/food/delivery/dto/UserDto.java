@@ -48,11 +48,11 @@ public class UserDto {
 //    private String password;
 
 
-    @Schema(description = "Foydalanuvchini paroli",
+    @Schema(description = "code",
             accessMode = Schema.AccessMode.WRITE_ONLY)
     @Pattern(regexp="^[0-9]+$",
             message="Telefon raqamni tasdiqlovchi code")
-    private String toolWord;
+    private String code;
 
 
     @Schema(description = "Foydalanuvchini asosiy telefon raqami",
@@ -87,13 +87,13 @@ public class UserDto {
     @Schema(description = "Foydalanuvchini telegram username",
             accessMode = Schema.AccessMode.READ_WRITE)
     @NotNull(message = AppMessages.EMPTY_FIELD)
-    private String tg_username;
+    private String tgUsername;
 
 
     @Schema(description = "Foydalanuvchini telegram idsi",
             accessMode = Schema.AccessMode.READ_WRITE)
     @NotNull(message = AppMessages.EMPTY_FIELD)
-    private Long tg_id;
+    private Long tgId;
 
 
     @Schema(description = "Foydalanuvchi qo'shilgan vaqt",

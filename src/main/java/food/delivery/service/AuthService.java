@@ -1,7 +1,9 @@
 package food.delivery.service;
 
+import food.delivery.dto.EmployeeDto;
 import food.delivery.dto.EmployeeRole;
 import food.delivery.dto.LoginDto;
+import food.delivery.dto.UserDto;
 import food.delivery.dto.response.JwtResponse;
 import food.delivery.dto.response.ResponseDto;
 import org.springframework.http.ResponseEntity;
@@ -13,17 +15,17 @@ public interface AuthService {
 
     ResponseEntity<?> roleForEmployee(EmployeeRole employeeRole);
 
-    ResponseEntity<?> createEmployeeAccount(String phone);
+    ResponseEntity<?> createEmployeeAccount(EmployeeDto employeeDto);
 
-    ResponseEntity<?> loginEmployeeCheckCode(String phone, String code);
+    ResponseEntity<?> loginEmployeeCheckCode(EmployeeDto employeeDto);
 
     ResponseDto<JwtResponse> loginEmployee(LoginDto loginDto);
 
 
 
-    ResponseEntity<?> createUserAccount(String phone, Long tgId);
+    ResponseEntity<?> createUserAccount(UserDto userDto);
 
-    ResponseEntity<?> loginUserCheckCode(String phone, String code);
+    ResponseEntity<?> loginUserCheckCode(UserDto userDto);
 
     ResponseDto<JwtResponse> loginUser(LoginDto loginDto);
 

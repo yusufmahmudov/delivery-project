@@ -1,6 +1,7 @@
 package food.delivery.service.impl;
 
 import food.delivery.dto.CategoryDto;
+import food.delivery.dto.response.GetResponse;
 import food.delivery.dto.response.ResponseDto;
 import food.delivery.helper.AppCode;
 import food.delivery.helper.AppMessages;
@@ -12,7 +13,9 @@ import food.delivery.service.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.PersistenceException;
@@ -28,81 +31,89 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    @Value("${main.domain}")
+    private String domain;
+
+
     @Override
-    public ResponseDto<String> addCategory(CategoryDto categoryDto) {
+    public ResponseEntity<?> addCategory(CategoryDto categoryDto) {
         try {
             if (categoryDto.getId() != null) {
-                return ResponseDto.<String>builder()
-                        .success(false)
-                        .message("id bo'sh bo'lishi kerak " + AppMessages.VALIDATOR_MESSAGE)
-                        .code(AppCode.VALIDATOR_ERROR)
-                        .build();
+                return ResponseEntity.badRequest()
+                        .body("id bo'sh bo'lishi kerak " + AppMessages.VALIDATOR_MESSAGE);
             }
 
             Category category = CategoryMapper.toEntityWithoutProduct(categoryDto);
             categoryRepository.save(category);
 
-            return ResponseDto.<String>builder()
-                    .code(AppCode.OK)
-                    .message(AppMessages.SAVED)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(category);
         }catch (DataAccessException | PersistenceException | IllegalArgumentException e) {
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .code(AppCode.ERROR)
-                    .message(e.getMessage())
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+
     @Override
-    public ResponseDto<List<CategoryDto>> allCategory() {
+    public ResponseEntity<?> allCategory(Integer limit, Integer offset) {
         try {
             List<CategoryDto> categoryDtos = categoryRepository.findAll()
                     .stream().map(CategoryMapper::toDtoWithoutProduct).toList();
+            List<CategoryDto> result = new ArrayList<>();
 
-            return ResponseDto.<List<CategoryDto>>builder()
-                    .data(categoryDtos)
-                    .code(AppCode.OK)
-                    .message(categoryDtos.isEmpty() ? AppMessages.NOT_FOUND : AppMessages.OK)
-                    .success(true)
-                    .build();
+            if (categoryDtos.size() < offset) {
+                return ResponseEntity.notFound().build();
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(categoryDtos.get(i));
+                if (categoryDtos.size()-1 == i) break;
+            }
+
+            GetResponse response = new GetResponse();
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(domain + "/category/get-page/?limit=10&offset=" + (offset+10));
+            response.setPrevious(domain + "/category/get-page/?limit=10&offset=" + (Math.max(offset - 10, 0)));
+
+            return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<List<CategoryDto>>builder()
-                    .code(AppCode.ERROR)
-                    .message(e.getMessage())
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+
     @Override
-    public ResponseDto<List<CategoryDto>> allCategoryWithProducts() {
+    public ResponseEntity<?> allCategoryWithProducts(Integer limit, Integer offset) {
         try {
             List<CategoryDto> categoryDtos = categoryRepository.findAll()
                     .stream().map(CategoryMapper::toDto).toList();
+            List<CategoryDto> result = new ArrayList<>();
 
-            return ResponseDto.<List<CategoryDto>>builder()
-                    .data(categoryDtos)
-                    .message(categoryDtos.isEmpty() ? AppMessages.NOT_FOUND : AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            if (categoryDtos.size() < offset) {
+                return ResponseEntity.notFound().build();
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(categoryDtos.get(i));
+                if (categoryDtos.size()-1 == i) break;
+            }
+            GetResponse response = new GetResponse();
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(domain + "/category/all-category-and-product/?limit=10&offset=" + (offset+10));
+            response.setPrevious(domain + "/category/all-category-and-product/?limit=10&offset=" + (Math.max(offset - 10, 0)));
+
+            return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<List<CategoryDto>>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<List<CategoryDto>> getAllCategoriesWithActiveProducts(Boolean active) {
+    public ResponseEntity<?> getAllCategoriesWithActiveProducts(Boolean active, Integer limit, Integer offset) {
         try {
             List<Category> categories = categoryRepository.findAll();
             for (Category category : categories) {
@@ -116,25 +127,32 @@ public class CategoryServiceImpl implements CategoryService {
             }
 
             List<CategoryDto> categoryDtos = categories.stream().map(CategoryMapper::toDto).toList();
+            List<CategoryDto> result = new ArrayList<>();
 
-            return ResponseDto.<List<CategoryDto>>builder()
-                    .data(categoryDtos)
-                    .message(categoryDtos.isEmpty() ? AppMessages.NOT_FOUND : AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            if (categoryDtos.size() < offset) {
+                return ResponseEntity.notFound().build();
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(categoryDtos.get(i));
+                if (categoryDtos.size()-1 == i) break;
+            }
+            GetResponse response = new GetResponse();
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(domain + "/category/all-category-and-product-active/?active="+ active +"&limit=10&offset=" + (offset+10));
+            response.setPrevious(domain + "/category/all-category-and-product-active/?active="+ active +"&limit=10&offset=" + (Math.max(offset - 10, 0)));
+
+            return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<List<CategoryDto>>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+
     @Override
-    public ResponseDto<CategoryDto> getById(Integer id) {
+    public ResponseEntity<?> getById(Integer id) {
         try {
             Optional<Category> optional = categoryRepository.findById(id);
             if (optional.isEmpty()) {
@@ -146,23 +164,15 @@ public class CategoryServiceImpl implements CategoryService {
             }
             CategoryDto categoryDto = CategoryMapper.toDtoWithoutProduct(optional.get());
 
-            return ResponseDto.<CategoryDto>builder()
-                    .data(categoryDto)
-                    .success(true)
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .build();
+            return ResponseEntity.ok().body(categoryDto);
         }catch (DataAccessException | IllegalArgumentException | NoSuchElementException e) {
-            return ResponseDto.<CategoryDto>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+
     @Override
-    public ResponseDto<CategoryDto> getByIdWithProducts(Integer id) {
+    public ResponseEntity<?> getByIdWithProducts(Integer id) {
         try {
             Optional<Category> optional = categoryRepository.findById(id);
             if (optional.isEmpty()) {
@@ -174,68 +184,40 @@ public class CategoryServiceImpl implements CategoryService {
             }
             CategoryDto categoryDto = CategoryMapper.toDto(optional.get());
 
-            return ResponseDto.<CategoryDto>builder()
-                    .data(categoryDto)
-                    .success(true)
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .build();
+            return ResponseEntity.ok().body(categoryDto);
         }catch (DataAccessException | IllegalArgumentException | NoSuchElementException e) {
-            return ResponseDto.<CategoryDto>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+
     @Override
-    public ResponseDto<String> deleteById(Integer id) {
+    public ResponseEntity<?> deleteById(Integer id) {
         try {
             categoryRepository.deleteById(id);
 
-            return ResponseDto.<String>builder()
-                    .success(true)
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .build();
+            return ResponseEntity.ok().body("Deleted");
         }catch (DataAccessException | IllegalArgumentException e) {
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+
     @Override
-    public ResponseDto<CategoryDto> updateCategory(CategoryDto categoryDto) {
+    public ResponseEntity<?> updateCategory(CategoryDto categoryDto) {
         try {
             if (categoryDto.getId() == null) {
-                return ResponseDto.<CategoryDto>builder()
-                        .message("ID " + AppMessages.EMPTY_FIELD)
-                        .code(AppCode.NOT_FOUND)
-                        .success(false)
-                        .build();
+                return ResponseEntity.badRequest().body("ID topilmadi");
             }
 
             Category category = CategoryMapper.toEntityWithoutProduct(categoryDto);
             categoryRepository.save(category);
 
-            return ResponseDto.<CategoryDto>builder()
-                    .message(AppMessages.OK)
-                    .success(true)
-                    .code(AppCode.OK)
-                    .data(categoryDto)
-                    .build();
+            return ResponseEntity.ok().body(category);
         }catch (DataAccessException | HibernateException e) {
             log.error(e.getMessage());
-            return ResponseDto.<CategoryDto>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

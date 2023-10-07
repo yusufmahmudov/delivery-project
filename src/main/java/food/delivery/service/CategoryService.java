@@ -2,25 +2,23 @@ package food.delivery.service;
 
 
 import food.delivery.dto.CategoryDto;
-import food.delivery.dto.response.ResponseDto;
-
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 public interface CategoryService {
 
-    ResponseDto<String> addCategory(CategoryDto categoryDto);
+    ResponseEntity<?> addCategory(CategoryDto categoryDto);
 
-    ResponseDto<List<CategoryDto>> allCategory();
+    ResponseEntity<?> allCategory(Integer limit, Integer offset);
 
-    ResponseDto<List<CategoryDto>> allCategoryWithProducts();
+    ResponseEntity<?> allCategoryWithProducts(Integer limit, Integer offset);
 
-    ResponseDto<List<CategoryDto>> getAllCategoriesWithActiveProducts(Boolean active);
+    ResponseEntity<?> getAllCategoriesWithActiveProducts(Boolean active, Integer limit, Integer offset);
 
-    ResponseDto<CategoryDto> getById(Integer id);
+    ResponseEntity<?> getById(Integer id);
 
-    ResponseDto<CategoryDto> getByIdWithProducts(Integer id);
+    ResponseEntity<?> getByIdWithProducts(Integer id);
 
-    ResponseDto<String> deleteById(Integer id);
+    ResponseEntity<?> deleteById(Integer id);
 
-    ResponseDto<CategoryDto> updateCategory(CategoryDto categoryDto);
+    ResponseEntity<?> updateCategory(CategoryDto categoryDto);
 }

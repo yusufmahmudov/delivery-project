@@ -36,8 +36,8 @@ public class CategoryController {
     @Operation(summary = "Hamma kategoriyalarni chiqaradi", tags = {"category", "get"})
     @GetMapping("/get-page")
     public ResponseEntity<?> allCategory(
-            @RequestParam Integer limit,
-            @RequestParam Integer offset) {
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
         return categoryService.allCategory(limit, offset);
     }
 
@@ -46,8 +46,8 @@ public class CategoryController {
             tags = {"category", "product", "get"})
     @GetMapping("/all-category-and-product")
     public ResponseEntity<?> allCategoryWithProducts(
-            @RequestParam Integer limit,
-            @RequestParam Integer offset) {
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
         return categoryService.allCategoryWithProducts(limit, offset);
     }
 
@@ -56,9 +56,9 @@ public class CategoryController {
             tags = {"category", "product", "get"})
     @GetMapping("/all-category-and-product-active")
     public ResponseEntity<?> getAllCategoriesWithActiveProducts(
-            @RequestParam Boolean active,
-            @RequestParam Integer limit,
-            @RequestParam Integer offset) {
+            @RequestParam(value = "active", defaultValue = "true") Boolean active,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
         return categoryService.getAllCategoriesWithActiveProducts(active, limit, offset);
     }
 

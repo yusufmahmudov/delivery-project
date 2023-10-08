@@ -73,8 +73,9 @@ public class CategoryServiceImpl implements CategoryService {
             GetResponse response = new GetResponse();
             response.setCount(result.size());
             response.setData(result);
-            response.setNext(domain + "/category/get-page/?limit=10&offset=" + (offset+10));
-            response.setPrevious(domain + "/category/get-page/?limit=10&offset=" + (Math.max(offset - 10, 0)));
+            response.setNext(categoryDtos.size() >= offset+limit?domain + "/category/get-page/?limit="+limit
+                    +"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/category/get-page/?limit="+limit+"&offset=" + (Math.max(offset-limit, 0)));
 
             return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {
@@ -102,8 +103,11 @@ public class CategoryServiceImpl implements CategoryService {
             GetResponse response = new GetResponse();
             response.setCount(result.size());
             response.setData(result);
-            response.setNext(domain + "/category/all-category-and-product/?limit=10&offset=" + (offset+10));
-            response.setPrevious(domain + "/category/all-category-and-product/?limit=10&offset=" + (Math.max(offset - 10, 0)));
+            response.setNext(categoryDtos.size() >= offset+limit?domain
+                    + "/category/all-category-and-product/?limit="+limit
+                    + "&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/category/all-category-and-product/?limit="
+                    +limit+"&offset=" + (Math.max(offset-limit, 0)));
 
             return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {
@@ -140,8 +144,11 @@ public class CategoryServiceImpl implements CategoryService {
             GetResponse response = new GetResponse();
             response.setCount(result.size());
             response.setData(result);
-            response.setNext(domain + "/category/all-category-and-product-active/?active="+ active +"&limit=10&offset=" + (offset+10));
-            response.setPrevious(domain + "/category/all-category-and-product-active/?active="+ active +"&limit=10&offset=" + (Math.max(offset - 10, 0)));
+            response.setNext(categoryDtos.size() >= offset+limit ?
+                    domain + "/category/all-category-and-product-active/?active="
+                    + active +"&limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/category/all-category-and-product-active/?active="
+                    + active +"&limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
 
             return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {

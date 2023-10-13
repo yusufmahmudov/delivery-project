@@ -12,21 +12,21 @@ import java.util.Set;
 
 public interface EmployeeService {
 
-    ResponseDto<List<EmployeeDto>> allEmployee();
+    ResponseEntity<?> allEmployee(Integer limit, Integer offset);
 
-    ResponseDto<List<EmployeeDto>> allEmployeeIsActive(Boolean active);
+    ResponseEntity<?> allEmployeeIsActive(Boolean active, Integer limit, Integer offset);
 
-    ResponseDto<List<EmployeeDto>> getByActiveTrueAndWorkplace(String workplace, Boolean active);
+    ResponseEntity<?> getByActiveTrueAndWorkplace(String workplace, Boolean active, Integer limit, Integer offset);
 
-    ResponseDto<EmployeeDto> getById();
+    ResponseEntity<?> getById();
 
-    ResponseDto<String> deleteById(Integer id);
+    ResponseEntity<?> deleteById(Integer id);
 
-    ResponseDto<String> update(EmployeeDto employeeDto);
+    ResponseEntity<?> update(EmployeeDto employeeDto);
 
-    ResponseDto<String> setIsActive(Integer id, Boolean active);
+    ResponseEntity<?> setIsActive(Integer id, Boolean active);
 
-    ResponseDto<String> setRoles(Set<String> roles, Integer id);
+    ResponseEntity<?> setRoles(Set<String> roles, Integer id);
 
     ResponseEntity<?> uploadImage(MultipartFile multipartFile);
 }

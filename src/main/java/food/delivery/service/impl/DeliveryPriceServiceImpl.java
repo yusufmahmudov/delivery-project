@@ -26,52 +26,35 @@ public class DeliveryPriceServiceImpl implements DeliveryPriceService {
     private final DeliveryPriceMapper deliveryPriceMapper;
 
     @Override
-    public ResponseDto<String> addNewPrice(DeliveryPriceDto deliveryPriceDto) {
+    public ResponseEntity<?> addNewPrice(DeliveryPriceDto deliveryPriceDto) {
         try {
             DeliveryPrice deliveryPrice = deliveryPriceMapper.toEntity(deliveryPriceDto);
             deliveryPriceRepository.save(deliveryPrice);
 
-            return ResponseDto.<String>builder()
-                    .success(true)
-                    .code(AppCode.OK)
-                    .message(AppMessages.SAVED)
-                    .build();
+            return ResponseEntity.ok().body(deliveryPrice);
         }catch (DataAccessException | PersistenceException | IllegalArgumentException e){
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .message(e.getMessage())
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<DeliveryPriceDto> getDeliveryPrice() {
+    public ResponseEntity<?> getDeliveryPrice() {
         try {
             DeliveryPrice deliveryPrice = deliveryPriceRepository.findTopByOrderByIdDesc();
             DeliveryPriceDto deliveryPriceDto = deliveryPriceMapper.toDto(deliveryPrice);
 
-            return ResponseDto.<DeliveryPriceDto>builder()
-                    .data(deliveryPriceDto)
-                    .message(AppMessages.OK)
-                    .success(true)
-                    .code(AppCode.OK)
-                    .build();
+            return ResponseEntity.ok().body(deliveryPriceDto);
         }catch (RuntimeException e){
             log.error(e.getMessage());
-            return ResponseDto.<DeliveryPriceDto>builder()
-                    .success(false)
-                    .code(AppCode.ERROR)
-                    .message(e.getMessage())
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<?> getPrice() {
-        ResponseDto<DeliveryPriceDto> responseDto = getDeliveryPrice();
-        Double price = responseDto.getData().getPrice();
+        ResponseEntity<?> response = getDeliveryPrice();
+        Double price = (Double) response.getBody();
         return ResponseEntity.ok().body(price);
     }
 }

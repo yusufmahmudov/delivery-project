@@ -1,14 +1,12 @@
 package food.delivery.service.impl;
 
 import food.delivery.dto.*;
-import food.delivery.dto.response.ResponseDto;
+import food.delivery.dto.response.GetResponse;
 import food.delivery.dto.response.ValidatorDto;
 import food.delivery.dto.template.ImageDto;
-import food.delivery.helper.AppCode;
 import food.delivery.helper.AppMessages;
 import food.delivery.model.Employee;
 import food.delivery.model.Role;
-import food.delivery.model.User;
 import food.delivery.repository.EmployeeRepository;
 import food.delivery.repository.RoleRepository;
 import food.delivery.security.SecurityUtil;
@@ -18,16 +16,15 @@ import food.delivery.service.ValidatorService;
 import food.delivery.service.mapper.interfaces.EmployeeMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static food.delivery.helper.AppCode.VALIDATOR_ERROR;
 import static food.delivery.helper.AppMessages.VALIDATOR_MESSAGE;
 
 
@@ -45,148 +42,157 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final RoleRepository roleRepository;
 
     private final ImageService imageService;
+    @Value("${main.domain}")
+    private String domain;
 
 
     @Override
-    public ResponseDto<List<EmployeeDto>> allEmployee() {
+    public ResponseEntity<?> allEmployee(Integer limit, Integer offset) {
         try {
-            List<EmployeeDto> employeeDtos = new ArrayList<>();
-            for (Employee employee : employeeRepository.findAll()) {
-                EmployeeDto dto = employeeMapper.toDto(employee);
-                employeeDtos.add(dto);
+            List<EmployeeDto> employeeDtos = employeeRepository.findAll()
+                    .stream().map(employeeMapper::toDto).toList();
+            List<EmployeeDto> result = new ArrayList<>();
+
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/employee/all/?limit="
+                    +limit+"&offset=0");
+            response.setData(result);
+
+            if (employeeDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
             }
 
-            return ResponseDto.<List<EmployeeDto>>builder()
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .data(employeeDtos)
-                    .build();
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(employeeDtos.get(i));
+                if (employeeDtos.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(employeeDtos.size() >= offset+limit?domain + "/employee/all/?limit="+limit
+                    +"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/employee/all/?limit="+limit+"&offset=" + (Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<List<EmployeeDto>>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<List<EmployeeDto>> allEmployeeIsActive(Boolean active) {
+    public ResponseEntity<?> allEmployeeIsActive(Boolean active, Integer limit, Integer offset) {
         try {
-            List<EmployeeDto> employeeDtos = new ArrayList<>();
-            for (Employee employee : employeeRepository.findAllByActive(active)) {
-                EmployeeDto dto = employeeMapper.toDto(employee);
-                employeeDtos.add(dto);
+            List<EmployeeDto> employeeDtos = employeeRepository.findAllByActive(active)
+                    .stream().map(employeeMapper::toDto).toList();
+            List<EmployeeDto> result = new ArrayList<>();
+
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/employee/all-active/?active"+active+"&limit="
+                    +limit+"&offset=0");
+            response.setData(result);
+
+            if (employeeDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
             }
 
-            return ResponseDto.<List<EmployeeDto>>builder()
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .data(employeeDtos)
-                    .build();
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(employeeDtos.get(i));
+                if (employeeDtos.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(employeeDtos.size() >= offset+limit?domain + "/employee/all-active/?" +
+                    "active="+active+"&limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/employee/all-active/?active="
+                    +active+"&limit="+limit+"&offset=" + (Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<List<EmployeeDto>>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<List<EmployeeDto>> getByActiveTrueAndWorkplace(String workplace, Boolean active){
+    public ResponseEntity<?> getByActiveTrueAndWorkplace(
+            String workplace, Boolean active, Integer limit, Integer offset){
         try {
-            List<EmployeeDto> employeeDtos = new ArrayList<>();
-            for (Employee employee : employeeRepository.findAllByActiveAndWorkplace(active, workplace)) {
-                EmployeeDto dto = employeeMapper.toDto(employee);
-                employeeDtos.add(dto);
+            List<EmployeeDto> employeeDtos = employeeRepository.findAllByActiveAndWorkplace(active, workplace)
+                    .stream().map(employeeMapper::toDto).toList();
+            List<EmployeeDto> result = new ArrayList<>();
+
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/employee/all-workplace/?workplace="
+                    +workplace+"&active"+active+"&limit="+limit+"&offset=0");
+            response.setData(result);
+
+            if (employeeDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
             }
 
-            return ResponseDto.<List<EmployeeDto>>builder()
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .data(employeeDtos)
-                    .build();
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(employeeDtos.get(i));
+                if (employeeDtos.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(employeeDtos.size() >= offset+limit?domain + "/employee/all-workplace/?" +
+                    "workplace="+workplace+"&active="+active+"&limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/employee/all-workplace/?workplace="+workplace+"&active="
+                    +active+"&limit="+limit+"&offset=" + (Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<List<EmployeeDto>>builder()
-                    .message("")
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<EmployeeDto> getById() {
+    public ResponseEntity<?> getById() {
         try {
             Integer id = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
             Optional<Employee> optional = employeeRepository.findById(id);
             if (optional.isEmpty()){
-                return ResponseDto.<EmployeeDto>builder()
-                        .message(AppMessages.NOT_FOUND)
-                        .success(false)
-                        .code(AppCode.NOT_FOUND)
-                        .build();
+                return ResponseEntity.internalServerError().body(AppMessages.NOT_FOUND);
             }
             EmployeeDto employeeDto = employeeMapper.toDto(optional.get());
 
-            return ResponseDto.<EmployeeDto>builder()
-                    .message(AppMessages.OK)
-                    .success(true)
-                    .code(AppCode.OK)
-                    .data(employeeDto)
-                    .build();
+            return ResponseEntity.ok().body(employeeDto);
         }catch (DataAccessException | IllegalArgumentException e) {
             log.error(e.getMessage());
-            return ResponseDto.<EmployeeDto>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<String> deleteById(Integer id) {
+    public ResponseEntity<?> deleteById(Integer id) {
         try {
             employeeRepository.deleteById(id);
-            return ResponseDto.<String>builder()
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(false)
-                    .build();
+            return ResponseEntity.ok().body("Deleted!");
         }catch (DataAccessException | IllegalArgumentException e) {
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .success(false)
-                    .code(AppCode.ERROR)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<String> update(EmployeeDto employeeDto) {
+    public ResponseEntity<?> update(EmployeeDto employeeDto) {
         try {
             List<ValidatorDto> errors = validatorService.validateEmployee(employeeDto);
             if (!errors.isEmpty()){
-                return ResponseDto.<String>builder()
-                        .code(VALIDATOR_ERROR)
-                        .errors(errors)
-                        .message(VALIDATOR_MESSAGE)
-                        .success(false)
-                        .build();
+                return ResponseEntity.internalServerError().body(VALIDATOR_MESSAGE);
             }
             Integer id = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
             Employee employee = employeeRepository.findById(id).get();
@@ -224,58 +230,37 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             employeeRepository.save(employee);
 
-            return ResponseDto.<String>builder()
-                    .message(AppMessages.SAVED)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(employee);
         }catch (NullPointerException | IllegalArgumentException | DataAccessException | NoSuchElementException e) {
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<String> setIsActive(Integer id, Boolean active) {
+    public ResponseEntity<?> setIsActive(Integer id, Boolean active) {
         try {
             Employee employee = employeeRepository.findById(id).get();
             employee.setActive(active);
             employeeRepository.save(employee);
 
-            return ResponseDto.<String>builder()
-                    .message(AppMessages.SAVED)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .data(employee.getActive() ? "True" : "False")
-                    .build();
+            return ResponseEntity.ok().body(employee.getActive() ? "True" : "False");
         }catch (RuntimeException e){
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<String> setRoles(Set<String> setRoles, Integer id) {
+    public ResponseEntity<?> setRoles(Set<String> setRoles, Integer id) {
         try {
             Employee employee = employeeRepository.findById(id).get();
             Set<Role> roles = new HashSet<>();
 
             if (setRoles == null) {
-                return ResponseDto.<String>builder()
-                        .code(AppCode.VALIDATOR_ERROR)
-                        .success(false)
-                        .message("role " + AppMessages.EMPTY_FIELD)
-                        .build();
+                return ResponseEntity.internalServerError().body("role " + AppMessages.EMPTY_FIELD);
             } else {
                 setRoles.forEach(role -> {
                     switch (role) {
@@ -310,18 +295,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setRoles(roles);
             employeeRepository.save(employee);
 
-            return ResponseDto.<String>builder()
-                    .message(AppMessages.SAVED)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(employee.getRoles());
         }catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

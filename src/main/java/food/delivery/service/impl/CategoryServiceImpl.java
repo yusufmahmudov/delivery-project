@@ -61,8 +61,14 @@ public class CategoryServiceImpl implements CategoryService {
                     .stream().map(CategoryMapper::toDtoWithoutProduct).toList();
             List<CategoryDto> result = new ArrayList<>();
 
-            if (categoryDtos.size() < offset) {
-                return ResponseEntity.notFound().build();
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/category/get-page/?limit="
+                    +limit+"&offset=0");
+            response.setData(result);
+
+            if (categoryDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
             }
 
             for (int i = offset; i < offset+limit; i++) {
@@ -70,7 +76,6 @@ public class CategoryServiceImpl implements CategoryService {
                 if (categoryDtos.size()-1 == i) break;
             }
 
-            GetResponse response = new GetResponse();
             response.setCount(result.size());
             response.setData(result);
             response.setNext(categoryDtos.size() >= offset+limit?domain + "/category/get-page/?limit="+limit
@@ -92,18 +97,24 @@ public class CategoryServiceImpl implements CategoryService {
                     .stream().map(CategoryMapper::toDto).toList();
             List<CategoryDto> result = new ArrayList<>();
 
-            if (categoryDtos.size() < offset) {
-                return ResponseEntity.notFound().build();
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/category/all-category-and-product/?limit="
+                    +limit+"&offset=0");
+            response.setData(result);
+
+            if (categoryDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
             }
 
             for (int i = offset; i < offset+limit; i++) {
                 result.add(categoryDtos.get(i));
                 if (categoryDtos.size()-1 == i) break;
             }
-            GetResponse response = new GetResponse();
+
             response.setCount(result.size());
             response.setData(result);
-            response.setNext(categoryDtos.size() >= offset+limit?domain
+            response.setNext(categoryDtos.size() > offset+limit?domain
                     + "/category/all-category-and-product/?limit="+limit
                     + "&offset="+(offset+limit):null);
             response.setPrevious(domain + "/category/all-category-and-product/?limit="
@@ -133,15 +144,21 @@ public class CategoryServiceImpl implements CategoryService {
             List<CategoryDto> categoryDtos = categories.stream().map(CategoryMapper::toDto).toList();
             List<CategoryDto> result = new ArrayList<>();
 
-            if (categoryDtos.size() < offset) {
-                return ResponseEntity.notFound().build();
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/all-category-and-product-active/?active="
+                                        + active +"&limit=" +limit+"&offset=0");
+            response.setData(result);
+
+            if (categoryDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
             }
 
             for (int i = offset; i < offset+limit; i++) {
                 result.add(categoryDtos.get(i));
                 if (categoryDtos.size()-1 == i) break;
             }
-            GetResponse response = new GetResponse();
+
             response.setCount(result.size());
             response.setData(result);
             response.setNext(categoryDtos.size() >= offset+limit ?

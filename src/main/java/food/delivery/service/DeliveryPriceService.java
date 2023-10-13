@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface DeliveryPriceService {
 
-    ResponseDto<String> addNewPrice(DeliveryPriceDto deliveryPriceDto);
+    ResponseEntity<?> addNewPrice(DeliveryPriceDto deliveryPriceDto);
 
-    ResponseDto<DeliveryPriceDto> getDeliveryPrice();
+    ResponseEntity<?> getDeliveryPrice();
 
     ResponseEntity<?> getPrice();
 }

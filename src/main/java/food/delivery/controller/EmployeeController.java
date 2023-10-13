@@ -9,13 +9,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import food.delivery.dto.EmployeeDto;
-import food.delivery.dto.response.ResponseDto;
 import food.delivery.service.EmployeeService;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -33,35 +31,39 @@ public class EmployeeController {
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @Operation(summary = "Barcha xodimlarni chiqarish", tags = {"employee", "get"})
     @GetMapping("/all")
-    public ResponseDto<List<EmployeeDto>> allEmployee() {
-        return employeeService.allEmployee();
+    public ResponseEntity<?> allEmployee(
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
+        return employeeService.allEmployee(limit, offset);
     }
 
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @Operation(summary = "Barcha faol xodimlarni chiqarish", tags = {"employee", "get"})
     @GetMapping("/all-active")
-    public ResponseDto<List<EmployeeDto>> allEmployeeIsActive(
-            @RequestParam Boolean active
-    ) {
-        return employeeService.allEmployeeIsActive(active);
+    public ResponseEntity<?> allEmployeeIsActive(
+            @RequestParam(value = "active", defaultValue = "true") Boolean active,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
+        return employeeService.allEmployeeIsActive(active, limit, offset);
     }
 
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @Operation(summary = "Barcha faol xodimlar. workplace ish o'rni", tags = {"employee", "get"})
     @GetMapping("/all-workplace")
-    public ResponseDto<List<EmployeeDto>> getByActiveTrueAndWorkplace(
+    public ResponseEntity<?> getByActiveTrueAndWorkplace(
             @RequestParam @NotNull String workplace,
-            @RequestParam Boolean active
-    ) {
-        return employeeService.getByActiveTrueAndWorkplace(workplace, active);
+            @RequestParam(value = "active", defaultValue = "true") Boolean active,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
+        return employeeService.getByActiveTrueAndWorkplace(workplace, active, limit, offset);
     }
 
 
     @Operation(summary = "'id' bo'yicha 1ta xodim ma'lumotlarini chiqarish", tags = {"employee", "get"})
     @GetMapping("/by-id")
-    public ResponseDto<EmployeeDto> getById() {
+    public ResponseEntity<?> getById() {
         return employeeService.getById();
     }
 
@@ -69,7 +71,7 @@ public class EmployeeController {
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @Operation(summary = "'id' bo'yicha 1ta xodimni o'chirish", tags = {"employee", "delete"})
     @DeleteMapping("/by-id")
-    public ResponseDto<String> deleteById(
+    public ResponseEntity<?> deleteById(
             @RequestParam @Min(1) Integer id) {
         return employeeService.deleteById(id);
     }
@@ -77,7 +79,7 @@ public class EmployeeController {
 
     @Operation(summary = "Xodim ma'lumotlarini o'zgartirish", tags = {"employee", "put"})
     @PutMapping("/update")
-    public ResponseDto<String> update(
+    public ResponseEntity<?> update(
             @RequestBody EmployeeDto employeeDto) {
         return employeeService.update(employeeDto);
     }
@@ -87,7 +89,7 @@ public class EmployeeController {
     @Operation(summary = "Xodim holatini o'zgartirish. active. by-id",
             tags = {"employee", "patch"})
     @PatchMapping("/active/by-id")
-    public ResponseDto<String> setIsActive(
+    public ResponseEntity<?> setIsActive(
             @RequestParam @Min(1) Integer id,
             @RequestParam Boolean active
     ) {
@@ -99,7 +101,7 @@ public class EmployeeController {
     @Operation(summary = "Xodim rolelarini o'zgartirish. by-id",
             tags = {"employee", "patch"})
     @PatchMapping("/set-roles")
-    public ResponseDto<String> setRoles(
+    public ResponseEntity<?> setRoles(
             @RequestBody  Set<String> roles,
             @RequestParam Integer id) {
         return employeeService.setRoles(roles, id);
@@ -120,8 +122,10 @@ public class EmployeeController {
     @Operation(summary = "Barcha telegram adminlar",
             tags = {"telegram", "get"})
     @GetMapping("/get-all-admin")
-    public ResponseEntity<?> allAdmin() {
-        return telegramService.allAdmin();
+    public ResponseEntity<?> allAdmin(
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
+        return telegramService.allAdmin(limit, offset);
     }
 
 

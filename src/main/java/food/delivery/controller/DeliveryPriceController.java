@@ -8,7 +8,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import food.delivery.dto.DeliveryPriceDto;
-import food.delivery.dto.response.ResponseDto;
 import food.delivery.service.DeliveryPriceService;
 
 import javax.validation.Valid;
@@ -26,7 +25,7 @@ public class DeliveryPriceController {
     @Operation(summary = "Yangi narx qo'shish",
             tags = {"deliveryPrice", "post"})
     @PostMapping("/add")
-    public ResponseDto<String> addNewPrice(
+    public ResponseEntity<?> addNewPrice(
             @Valid @RequestBody DeliveryPriceDto deliveryPriceDto) {
         return deliveryPriceService.addNewPrice(deliveryPriceDto);
     }
@@ -35,7 +34,7 @@ public class DeliveryPriceController {
     @Operation(summary = "Yetkazib berish narxlarini qaytaradi",
             tags = {"deliveryPrice", "get"})
     @GetMapping("/get")
-    public ResponseDto<DeliveryPriceDto> getDeliveryPrice() {
+    public ResponseEntity<?> getDeliveryPrice() {
         return deliveryPriceService.getDeliveryPrice();
     }
 

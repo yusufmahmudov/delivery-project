@@ -8,13 +8,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import food.delivery.dto.FilialDto;
-import food.delivery.dto.response.ResponseDto;
 import food.delivery.service.FilialService;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,7 +28,7 @@ public class FilialController {
 
     @Operation(summary = "Yangi Filial qo'shish", tags = {"filial", "post"})
     @PostMapping("/add")
-    public ResponseDto<String> addFilial(
+    public ResponseEntity<?> addFilial(
             @Valid @RequestBody FilialDto filialDto) {
         return filialService.addFilial(filialDto);
     }
@@ -38,34 +36,41 @@ public class FilialController {
 
     @Operation(summary = "Barcha filiallarni chiqarish", tags = {"filial", "get"})
     @GetMapping("/all")
-    public ResponseDto<List<FilialDto>> allFilial() {
-        return filialService.allFilial();
+    public ResponseEntity<?> allFilial(
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return filialService.allFilial(limit, offset);
     }
 
 
     @Operation(summary = "Barcha filiallarni chiqarish. Active true or false",
             tags = {"filial", "get"})
     @GetMapping("/all-active")
-    public ResponseDto<List<FilialDto>> allFilialIsActive(
-            @RequestParam Boolean active) {
-
-        return filialService.allFilialIsActive(active);
+    public ResponseEntity<?> allFilialIsActive(
+            @RequestParam(value = "active", defaultValue = "true") Boolean active,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return filialService.allFilialIsActive(active, limit, offset);
     }
 
 
     @Operation(summary = "Ayni vaqtdagi barcha ochiq filiallar",
             tags = {"filial", "get"})
     @GetMapping("/all-open")
-    public ResponseDto<List<FilialDto>> allOpenFilial() {
-
-        return filialService.allOpenFilial();
+    public ResponseEntity<?> allOpenFilial(
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return filialService.allOpenFilial(limit, offset);
     }
 
 
     @Operation(summary = "'id'si bo'yicha 1ta filialni chiqarish",
             tags = {"filial", "get"})
     @GetMapping("/by-id")
-    public ResponseDto<FilialDto> getById(
+    public ResponseEntity<?> getById(
             @RequestParam Integer id) {
 
         return filialService.getById(id);
@@ -76,7 +81,7 @@ public class FilialController {
     @Operation(summary = "Filial ma'lumotlarini o'zgartish",
             tags = {"filial", "put"})
     @PutMapping("/update")
-    public ResponseDto<FilialDto> updateFilial(
+    public ResponseEntity<?> updateFilial(
             @RequestBody FilialDto filialDto) {
         return filialService.updateFilial(filialDto);
     }
@@ -85,7 +90,7 @@ public class FilialController {
     @Operation(summary = "'id'si bo'yicha Filialni o'chirib tashlash",
             tags = {"filial", "delete"})
     @DeleteMapping("/by-id")
-    public ResponseDto<String> deleteFilial(
+    public ResponseEntity<?> deleteFilial(
             @RequestParam @Min(1) Integer id) {
         return filialService.deleteFilial(id);
     }
@@ -94,7 +99,7 @@ public class FilialController {
     @Operation(summary = "Filialni faol holatga keltirish, yoki aksi",
             tags = {"filial", "patch"})
     @PatchMapping("/active")
-    public ResponseDto<String> isActive(
+    public ResponseEntity<?> isActive(
             @RequestParam @Min(1) Integer id,
             @RequestParam Boolean active
     ) {
@@ -107,9 +112,12 @@ public class FilialController {
     @GetMapping("/all-filial-for-user")
     public ResponseEntity<?> allFilialForUser(
             @RequestParam Double lat,
-            @RequestParam Double lon) {
-        Map<Double, FilialDto> map = filialService.checkTheDistance(lat, lon);
-        return ResponseEntity.accepted().body(map);
+            @RequestParam Double lon,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+//        Map<Double, FilialDto> map = filialService.checkTheDistance(lat, lon, limit, offset);
+        return ResponseEntity.accepted().body("");
     }
 
 

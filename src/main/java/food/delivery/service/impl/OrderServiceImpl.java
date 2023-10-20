@@ -65,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
                 assert filial != null;
                 orderDto.setFilialId(filial.getId());
             } else {
-                filial = filialService.getById(orderDto.getFilialId()).getData();
+//                filial = filialService.getById(orderDto.getFilialId()).getData();
             }
             String orderNumber = generateOrderNumber();
             orderDto.setOrderNumber(orderNumber);
@@ -84,14 +84,14 @@ public class OrderServiceImpl implements OrderService {
             order.setQuantity(quantity);
             orderRepository.save(order);
 
-            Integer admin = filial.getAdminId();
-            if (admin == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
-            }
+//            Integer admin = filial.getAdminId();
+//            if (admin == null) {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
+//            }
             // TODO: WEBSOCKET
             NewOrder newOrder = new NewOrder();
             newOrder.setOrderId(orderDto.getId());
-            newOrder.setFilialId(filial.getId());
+//            newOrder.setFilialId(filial.getId());
             newOrder.setOrderDto(orderDto);
 
 //            newOrderRepository.save(newOrder);

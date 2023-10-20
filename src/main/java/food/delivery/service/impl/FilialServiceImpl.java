@@ -1,21 +1,20 @@
 package food.delivery.service.impl;
 
 import food.delivery.dto.FilialDto;
+import food.delivery.dto.response.GetResponse;
 import food.delivery.dto.response.ResponseDto;
 import food.delivery.dto.response.ValidatorDto;
 import food.delivery.dto.template.ImageDto;
-import food.delivery.helper.AppCode;
 import food.delivery.helper.AppMessages;
-import food.delivery.model.Employee;
 import food.delivery.model.Filial;
 import food.delivery.repository.FilialRepository;
-import food.delivery.security.SecurityUtil;
 import food.delivery.service.FilialService;
 import food.delivery.service.ImageService;
 import food.delivery.service.ValidatorService;
 import food.delivery.service.mapper.interfaces.FilialMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,9 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.PersistenceException;
 import java.time.DateTimeException;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.*;
 
 
@@ -38,16 +35,15 @@ public class FilialServiceImpl implements FilialService {
     private final FilialMapper filialMapper;
     private final ValidatorService validatorService;
     private final ImageService imageService;
+    @Value("${main.domain}")
+    private String domain;
+
 
     @Override
-    public ResponseDto<String> addFilial(FilialDto filialDto) {
+    public ResponseEntity<?> addFilial(FilialDto filialDto) {
         try {
             if (filialDto.getId() != null){
-                return ResponseDto.<String>builder()
-                        .message("id bo'sh bo'ishi kerak")
-                        .success(false)
-                        .code(AppCode.VALIDATOR_ERROR)
-                        .build();
+                return ResponseEntity.internalServerError().body("ID bo'sh bo'lishi kerak");
             }
             if (filialDto.getActive() == null) {
                 filialDto.setActive(false);
@@ -59,123 +55,118 @@ public class FilialServiceImpl implements FilialService {
             Filial filial = filialMapper.toEntity(filialDto);
             filialRepository.save(filial);
 
-            return ResponseDto.<String>builder()
-                    .message(AppMessages.SAVED)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(filial);
         }catch (DataAccessException | PersistenceException | IllegalArgumentException e){
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .code(AppCode.ERROR)
-                    .message(e.getMessage())
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+
     @Override
-    public ResponseDto<List<FilialDto>> allFilial() {
+    public ResponseEntity<?> allFilial(Integer limit, Integer offset) {
         try {
             List<FilialDto> filialDtos = filialRepository.findAll()
                     .stream().map(filialMapper::toDto).toList();
+            List<FilialDto> result = new ArrayList<>();
 
-            return ResponseDto.<List<FilialDto>>builder()
-                    .data(filialDtos)
-                    .message(AppMessages.OK)
-                    .success(true)
-                    .code(AppCode.OK)
-                    .build();
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/filial/all/?limit="
+                    +limit+"&offset=0");
+            response.setData(result);
+
+            if (filialDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(filialDtos.get(i));
+                if (filialDtos.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(filialDtos.size() >= offset+limit?domain + "/filial/all/?limit="+limit
+                    +"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/filial/all/?limit="+limit+"&offset=" + (Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
         } catch (RuntimeException e){
             log.error(e.getMessage());
-            return ResponseDto.<List<FilialDto>>builder()
-                    .message(e.getMessage())
-                    .success(false)
-                    .code(AppCode.ERROR)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+
     @Override
-    public ResponseDto<List<FilialDto>> allFilialIsActive(Boolean active) {
+    public ResponseEntity<?> allFilialIsActive(Boolean active, Integer limit, Integer offset) {
         try {
             List<FilialDto> filialDtos = filialRepository.findAllByActive(active)
                     .stream().map(filialMapper::toDto).toList();
+            List<FilialDto> result = new ArrayList<>();
 
-            return ResponseDto.<List<FilialDto>>builder()
-                    .data(filialDtos)
-                    .message(AppMessages.OK)
-                    .success(true)
-                    .code(AppCode.OK)
-                    .build();
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/filial/all-open/?active"+active+"&limit="
+                    +limit+"&offset=0");
+            response.setData(result);
+
+            if (filialDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(filialDtos.get(i));
+                if (filialDtos.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(filialDtos.size() >= offset+limit?domain + "/filial/all-open/?" +
+                    "active"+active+"&limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/filial/all-open/?active"+active+
+                    "&limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
         } catch (RuntimeException e){
             log.error(e.getMessage());
-            return ResponseDto.<List<FilialDto>>builder()
-                    .message(e.getMessage())
-                    .success(false)
-                    .code(AppCode.ERROR)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<FilialDto> getById(Integer id) {
+    public ResponseEntity<?> getById(Integer id) {
         try {
             Optional<Filial> optional = filialRepository.findById(id);
             if (optional.isEmpty()){
-                return ResponseDto.<FilialDto>builder()
-                        .message(AppMessages.NOT_FOUND)
-                        .success(false)
-                        .code(AppCode.NOT_FOUND)
-                        .build();
+                return ResponseEntity.notFound().build();
             }
             FilialDto filialDto = filialMapper.toDto(optional.get());
 
-            return ResponseDto.<FilialDto>builder()
-                    .message(AppMessages.OK)
-                    .data(filialDto)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(filialDto);
         }catch (DataAccessException | IllegalArgumentException e){
             log.error(e.getMessage());
-            return ResponseDto.<FilialDto>builder()
-                    .code(AppCode.ERROR)
-                    .message(e.getMessage())
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<FilialDto> updateFilial(FilialDto filialDto) {
+    public ResponseEntity<?> updateFilial(FilialDto filialDto) {
         try {
             if (filialDto.getId() == null) {
-                return ResponseDto.<FilialDto>builder()
-                        .success(false)
-                        .message("Id " + AppMessages.EMPTY_FIELD)
-                        .code(AppCode.ERROR)
-                        .build();
+                return ResponseEntity.internalServerError().body("ID " + AppMessages.EMPTY_FIELD);
             }
 
             Optional<Filial> optional = filialRepository.findById(filialDto.getId());
             if (optional.isEmpty()){
-                return ResponseDto.<FilialDto>builder()
-                        .message(AppMessages.NOT_FOUND)
-                        .success(false)
-                        .code(AppCode.NOT_FOUND)
-                        .build();
+                return ResponseEntity.notFound().build();
             }
 
             List<ValidatorDto> errors = validatorService.validateFilial(filialDto);
             if (!errors.isEmpty()) {
-                return ResponseDto.<FilialDto>builder()
-                        .message(AppMessages.VALIDATOR_MESSAGE)
-                        .success(false)
-                        .code(AppCode.VALIDATOR_ERROR)
-                        .errors(errors)
-                        .build();
+                return ResponseEntity.internalServerError().body(AppMessages.VALIDATOR_MESSAGE);
             }
 
             Filial filial1 = optional.get();
@@ -196,62 +187,36 @@ public class FilialServiceImpl implements FilialService {
             filialRepository.save(filial1);
             filialDto = filialMapper.toDto(filial1);
 
-            return ResponseDto.<FilialDto>builder()
-                    .message(AppMessages.SAVED)
-                    .code(AppCode.OK)
-                    .data(filialDto)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(filialDto);
         }catch (NullPointerException | IllegalArgumentException | DataAccessException | NoSuchElementException e) {
             log.error(e.getMessage());
-            return ResponseDto.<FilialDto>builder()
-                    .message(e.getMessage())
-                    .success(false)
-                    .code(AppCode.ERROR)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<String> deleteFilial(Integer id) {
+    public ResponseEntity<?> deleteFilial(Integer id) {
         try {
             filialRepository.deleteById(id);
 
-            return ResponseDto.<String>builder()
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body("Deleted!");
         }catch (DataAccessException | IllegalArgumentException e) {
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .success(false)
-                    .code(AppCode.ERROR)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<String> isActive(Integer id, Boolean active) {
+    public ResponseEntity<?> isActive(Integer id, Boolean active) {
         try {
             Filial filial = filialRepository.findById(id).get();
             filial.setActive(active);
             filialRepository.save(filial);
 
-            return ResponseDto.<String>builder()
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .data(active.toString())
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body("Active " + active);
         }catch (DataAccessException | IllegalArgumentException e) {
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .success(false)
-                    .code(AppCode.ERROR)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -266,7 +231,22 @@ public class FilialServiceImpl implements FilialService {
     @Override
     public SortedMap<Double, FilialDto> checkTheDistance(Double lat, Double lon) {
         try {
-            List<FilialDto> filials = allOpenFilial().getData();
+            List<FilialDto> filials = filialRepository.findAllByActive(true)
+                    .stream().map(filialMapper::toDto).toList();
+
+            LocalTime localTime = LocalTime.now();
+            List<FilialDto> filialDtos = new ArrayList<>();
+
+            for (FilialDto f : filials) {
+                Filial filial = filialMapper.toEntity(f);
+                LocalTime opening = filial.getOpeningTime().toLocalTime();
+                LocalTime closing = filial.getClosingTime().toLocalTime();
+
+                if (localTime.isAfter(opening) && localTime.isBefore(closing)) {
+                    filialDtos.add(f);
+                }
+            }
+
             SortedMap<Double, FilialDto> map = new TreeMap<>();
 
             for (FilialDto f : filials) {
@@ -306,10 +286,17 @@ public class FilialServiceImpl implements FilialService {
     }
 
 
+    private ResponseDto<?> allOpenBranch() {
+        return null;
+    }
+
+
     @Override
-    public ResponseDto<List<FilialDto>> allOpenFilial() {
+    public ResponseEntity<?> allOpenFilial(Integer limit, Integer offset) {
         try {
-            List<FilialDto> filials = allFilialIsActive(true).getData();
+            List<FilialDto> filials = filialRepository.findAllByActive(true)
+                    .stream().map(filialMapper::toDto).toList();
+
             LocalTime localTime = LocalTime.now();
             List<FilialDto> filialDtos = new ArrayList<>();
 
@@ -323,19 +310,10 @@ public class FilialServiceImpl implements FilialService {
                 }
             }
 
-            return ResponseDto.<List<FilialDto>>builder()
-                    .message(AppMessages.OK)
-                    .data(filialDtos)
-                    .success(true)
-                    .code(AppCode.OK)
-                    .build();
+            return ResponseEntity.ok().body(filialDtos);
         } catch (NullPointerException | DateTimeException | NumberFormatException e) {
             log.error(e.getMessage());
-            return ResponseDto.<List<FilialDto>>builder()
-                    .message(e.getMessage())
-                    .success(false)
-                    .code(AppCode.ERROR)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

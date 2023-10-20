@@ -12,23 +12,23 @@ import java.util.SortedMap;
 
 public interface FilialService {
 
-    ResponseDto<String> addFilial(FilialDto filialDto);
+    ResponseEntity<?> addFilial(FilialDto filialDto);
 
-    ResponseDto<List<FilialDto>> allFilial();
+    ResponseEntity<?> allFilial(Integer limit, Integer offset);
 
-    ResponseDto<List<FilialDto>> allFilialIsActive(Boolean active);
+    ResponseEntity<?> allFilialIsActive(Boolean active, Integer limit, Integer offset);
 
-    ResponseDto<FilialDto> getById(Integer id);
+    ResponseEntity<?> getById(Integer id);
 
-    ResponseDto<FilialDto> updateFilial(FilialDto filialDto);
+    ResponseEntity<?> updateFilial(FilialDto filialDto);
 
-    ResponseDto<String> deleteFilial(Integer id);
+    ResponseEntity<?> deleteFilial(Integer id);
 
-    ResponseDto<String> isActive(Integer id, Boolean active);
+    ResponseEntity<?> isActive(Integer id, Boolean active);
 
     SortedMap<Double, FilialDto> checkTheDistance(Double lat, Double lon);
 
-    ResponseDto<List<FilialDto>> allOpenFilial();
+    ResponseEntity<?> allOpenFilial(Integer limit, Integer offset);
 
     ResponseEntity<?> uploadImage(MultipartFile multipartFile, Integer filialId);
 

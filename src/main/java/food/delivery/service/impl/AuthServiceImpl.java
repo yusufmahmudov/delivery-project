@@ -33,10 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -180,8 +177,10 @@ public class AuthServiceImpl implements AuthService {
 
         employee.setRoles(roleSet);
         employeeRepository.save(employee);
+        Map<String, String> map = new HashMap<>();
+        map.put("roles", "OK");
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Roles saved!");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);
     }
 
 
@@ -221,8 +220,10 @@ public class AuthServiceImpl implements AuthService {
             employee.setPassword(passwordEncoder.encode(salt + code));
         }
         employeeRepository.save(employee);
+        Map<String, String> map = new HashMap<>();
+        map.put("code", code);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Code sending " + code);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);
     }
 
 
@@ -324,8 +325,10 @@ public class AuthServiceImpl implements AuthService {
             user.setPassword(passwordEncoder.encode(salt + code));
         }
         userRepository.save(user);
+        Map<String, String> map = new HashMap<>();
+        map.put("code", code);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Code sending " + code);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);
     }
 
 
@@ -348,8 +351,10 @@ public class AuthServiceImpl implements AuthService {
         String token = loginUser(loginDto).getData().getToken();
 
         userRepository.save(user);
+        Map<String, String> map = new HashMap<>();
+        map.put("token", token);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);
     }
 
 

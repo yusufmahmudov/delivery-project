@@ -25,17 +25,17 @@ public class EmployeeDto {
     private Integer id;
 
     @Schema(description = "Xodim ismi",
-            accessMode = Schema.AccessMode.READ_WRITE, required = true)
+            accessMode = Schema.AccessMode.READ_WRITE)
     @Size(min = 3, max = 30, message = "length min 3 and max 30")
-    @NotNull(message = AppMessages.EMPTY_FIELD)
+//    @NotNull(message = AppMessages.EMPTY_FIELD)
     @Pattern(regexp="^[a-zA-Z]+$", message = "Faqat katta va kichik harflardan iborat bo'lishi kerak")
     private String firstName;
 
 
     @Schema(description = "Xodim familiyasi",
-            accessMode = Schema.AccessMode.READ_WRITE, required = true)
+            accessMode = Schema.AccessMode.READ_WRITE)
     @Size(min = 3, max = 30, message = "length min 3 and max 30")
-    @NotNull(message = AppMessages.EMPTY_FIELD)
+//    @NotNull(message = AppMessages.EMPTY_FIELD)
     @Pattern(regexp="^[a-zA-Z]+$", message = "Faqat katta va kichik harflardan iborat bo'lishi kerak")
     private String lastName;
 
@@ -52,7 +52,7 @@ public class EmployeeDto {
     @Schema(description = "Xodimni qo'shimcha telefon raqami",
             accessMode = Schema.AccessMode.READ_WRITE)
     @Size(min = 5, max = 20, message = "length min 5 and max 20")
-    @NotNull(message = AppMessages.EMPTY_FIELD)
+//    @NotNull(message = AppMessages.EMPTY_FIELD)
     @Pattern(regexp = "^([+]?\\d{3}[-\\s]?|)\\d{2}[-\\s]?\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{2}$",
             message = "Invalid phone number")
     private String phoneNum2;
@@ -61,7 +61,7 @@ public class EmployeeDto {
     @Schema(description = "Xodimni yashash manzili ma'lumotlari",
             accessMode = Schema.AccessMode.READ_WRITE)
     @Size(max = 120, message = "length max 20")
-    @NotNull(message = AppMessages.EMPTY_FIELD)
+//    @NotNull(message = AppMessages.EMPTY_FIELD)
     private String address;
 
 
@@ -80,32 +80,32 @@ public class EmployeeDto {
 
 
     @Schema(description = "Xodimning ish o'rni. ADMIN, COURIER",
-            accessMode = Schema.AccessMode.READ_WRITE, required = true)
+            accessMode = Schema.AccessMode.READ_WRITE)
     @Size(max = 20, message = "length max 20")
-    @NotNull(message = AppMessages.EMPTY_FIELD)
+//    @NotNull(message = AppMessages.EMPTY_FIELD)
     @Pattern(regexp="^[a-zA-Z]+$",
             message="Faqat katta, kichik harflardan iborat bo'lishi shart")
     private String workplace;
 
 
     @Schema(description = "Xodimning oylik maoshi",
-            accessMode = Schema.AccessMode.READ_WRITE, required = true)
-    @NotNull(message = AppMessages.EMPTY_FIELD)
+            accessMode = Schema.AccessMode.READ_WRITE)
+//    @NotNull(message = AppMessages.EMPTY_FIELD)
     private Double salary;
 
 
     @Schema(description = "Passport seriya raqami",
-            accessMode = Schema.AccessMode.READ_ONLY, required = true,
+            accessMode = Schema.AccessMode.READ_ONLY,
             example = "AA 1112233")
     @Size(max = 20, message = "length max 20")
-    @NotNull(message = AppMessages.EMPTY_FIELD)
+//    @NotNull(message = AppMessages.EMPTY_FIELD)
     @Pattern(regexp="^[A-Z0-9]+$",
             message="Faqat katta harflar va sonlardan iborat bo'lishi shart")
     private String passportNo;
 
 
     @Schema(description = "Xodimning tug'ilgan sanasi",
-            accessMode = Schema.AccessMode.READ_WRITE, required = true,
+            accessMode = Schema.AccessMode.READ_WRITE,
             example = "dd-MM-yyyy")
     @JsonFormat(pattern="dd-MM-yyyy")
     private String birthDate;
@@ -123,8 +123,8 @@ public class EmployeeDto {
 
 
     @Schema(description = "MODERATOR = mod, ADMIN = admin, COURIER = courier, EMPLOYEE = employee",
-            accessMode = Schema.AccessMode.READ_WRITE, required = true)
-    @NotNull(message = AppMessages.EMPTY_FIELD)
+            accessMode = Schema.AccessMode.READ_WRITE)
+//    @NotNull(message = AppMessages.EMPTY_FIELD)
     private Set<String> role;
 
 }

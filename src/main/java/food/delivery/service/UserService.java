@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface UserService {
 
-    ResponseDto<List<UserDto>> allUser();
+    ResponseEntity<?> allUser(Integer limit, Integer offset);
 
-    ResponseDto<UserDto> getById();
+    ResponseEntity<?> getById();
 
-    ResponseDto<String> update(UserDto userDto);
+    ResponseEntity<?> update(UserDto userDto);
 
 
 }

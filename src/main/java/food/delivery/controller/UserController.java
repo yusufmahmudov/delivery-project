@@ -27,15 +27,18 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @Operation(summary = "Hamma userlarni chiqarish", tags = {"user", "get"})
     @GetMapping("/all")
-    public ResponseDto<List<UserDto>> allUser() {
-        return userService.allUser();
+    public ResponseEntity<?> allUser(
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return userService.allUser(limit, offset);
     }
 
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_MODERATOR')")
     @Operation(summary = "'id' bo'yicha 1ta user ma'lumotlarni chiqarish", tags = {"user", "get"})
     @GetMapping("/by-id")
-    public ResponseDto<UserDto> getById() {
+    public ResponseEntity<?> getById() {
         return userService.getById();
     }
 
@@ -43,7 +46,7 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "User ma'lumotini tahrirlash", tags = {"user", "put"})
     @PutMapping("/update")
-    public ResponseDto<String> update(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> update(@RequestBody UserDto userDto) {
         return userService.update(userDto);
     }
 

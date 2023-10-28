@@ -10,12 +10,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import food.delivery.dto.ProductDto;
-import food.delivery.dto.response.ResponseDto;
 import food.delivery.service.ProductService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-import java.util.List;
 
 
 @RestController
@@ -27,11 +25,12 @@ public class ProductController {
 
     private final ProductService productService;
 
+
     @PreAuthorize("hasRole('ROLE_MODERATOR') or hasRole('ROLE_ADMIN')")
     @Operation(summary = "Rasmsiz yangi mahsulot qo'shish uchun",
             tags = {"product", "post"})
     @PostMapping("/add")
-    public ResponseDto<String> add(
+    public ResponseEntity<?> add(
             @Valid @RequestBody ProductDto productDto) {
         return productService.add(productDto);
     }
@@ -41,7 +40,7 @@ public class ProductController {
     @Operation(summary = "Rasm va product fieldlarini qo'shish orqali yangi mahsulot qo'shish",
             tags = {"product", "post"})
     @PostMapping("/add-product")
-    public ResponseDto<ProductDto> addProduct(
+    public ResponseEntity<?> addProduct(
             @RequestParam("image") MultipartFile multipartFile,
 
             @RequestParam @NotNull(message = AppMessages.EMPTY_FIELD)
@@ -76,24 +75,30 @@ public class ProductController {
     @Operation(summary = "Barcha mahsulotlarni chiqarish",
             tags = {"product", "get"})
     @GetMapping("/all")
-    public ResponseDto<List<ProductDto>> allProducts() {
-        return productService.allProducts();
+    public ResponseEntity<?> allProducts(
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return productService.allProducts(limit, offset);
     }
 
 
     @Operation(summary = "Barcha active mahsulotlarni chiqarish",
             tags = {"product", "get"})
     @GetMapping("/all-active")
-    public ResponseDto<List<ProductDto>> allByActive(
-            @RequestParam Boolean active) {
-        return productService.allByActive(active);
+    public ResponseEntity<?> allByActive(
+            @RequestParam(value = "active", defaultValue = "true") Boolean active,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return productService.allByActive(active, limit, offset);
     }
 
 
     @Operation(summary = "Mahsulotni 'id'si bo'yicha chiqarish",
             tags = {"product", "get"})
     @GetMapping("/by-id")
-    public ResponseDto<ProductDto> getById(
+    public ResponseEntity<?> getById(
             @RequestParam @Min(1) Integer id) {
         return productService.getById(id);
     }
@@ -102,8 +107,11 @@ public class ProductController {
     @GetMapping("/get-all-extra")
     @Operation(summary = "Hamma qo'shimcha yryish mumkin bo'lgan mahsulotlar",
             tags = {"product", "get"})
-    public ResponseEntity<?> getAllExtraProduct() {
-        return productService.getAllExtraProduct();
+    public ResponseEntity<?> getAllExtraProduct(
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return productService.getAllExtraProduct(limit, offset);
     }
 
 
@@ -111,8 +119,11 @@ public class ProductController {
     @Operation(summary = "Id bo'yicha -- Hamma qo'shimcha yryish mumkin bo'lgan mahsulotlar",
             tags = {"product", "get"})
     public ResponseEntity<?> getAllExtraProductById(
-            @RequestParam @Min(1) Integer id) {
-        return productService.getAllExtraProductById(id);
+            @RequestParam(value = "id") @Min(1) Integer id,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return productService.getAllExtraProductById(id, limit, offset);
     }
 
 
@@ -120,8 +131,11 @@ public class ProductController {
     @Operation(summary = "ID bo'yicha -- Hamma bonusga beriladigan mahsulotlar",
             tags = {"product", "get"})
     public ResponseEntity<?> getAllBonusProductById(
-            @RequestParam @Min(1) Integer id) {
-        return productService.getAllBonusProductById(id);
+            @RequestParam(value = "id") @Min(1) Integer id,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return productService.getAllBonusProductById(id, limit, offset);
     }
 
 
@@ -149,7 +163,7 @@ public class ProductController {
     @Operation(summary = "Mahsulotni 'id'si bo'yicha o'chirib tashlash",
             tags = {"product", "delete"})
     @DeleteMapping("/by-id")
-    public ResponseDto<String> deleteById(
+    public ResponseEntity<?> deleteById(
             @RequestParam @Min(1) Integer id) {
         return productService.deleteById(id);
     }
@@ -159,7 +173,7 @@ public class ProductController {
     @Operation(summary = "Mahsulotni tahrirlash",
             tags = {"product", "put"})
     @PutMapping("/update")
-    public ResponseDto<ProductDto> updateProduct(
+    public ResponseEntity<?> updateProduct(
             @RequestBody ProductDto productDto) {
         return productService.updateProduct(productDto);
     }
@@ -169,7 +183,7 @@ public class ProductController {
     @Operation(summary = "Mahsulot active bo'lsa passiv, passiv bo'lsa active holatga keltirish",
             tags = {"product", "patch"})
     @PatchMapping("/set-active/by-id")
-    public ResponseDto<String> setIsActive(
+    public ResponseEntity<?> setIsActive(
             @RequestParam @Min(1) Integer id,
             @RequestParam Boolean active
     ) {
@@ -181,7 +195,7 @@ public class ProductController {
     @Operation(summary = "Mahsulotga chegirma foizni o'rnatish. Mahsulot 'id'si va chegirma foizi",
             tags = {"product", "patch"})
     @PatchMapping("/set-discount")
-    public ResponseDto<String> setDiscount(
+    public ResponseEntity<?> setDiscount(
             @RequestParam @Min(1) Integer id,
             @DecimalMin(value = "0.0") @DecimalMax(value = "100.0")
             @RequestParam Double discount

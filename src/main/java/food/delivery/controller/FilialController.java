@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.Map;
+import java.util.SortedMap;
 
 @RestController
 @RequestMapping("/filial")
@@ -67,6 +67,18 @@ public class FilialController {
     }
 
 
+    @Operation(summary = "Userning lat, lon bo'yicha filiallarni sort qilib chiqarish")
+    @GetMapping("/all-sorting")
+    public ResponseEntity<?> sortingByDistance(
+            @RequestParam(value = "lat") Double lat,
+            @RequestParam(value = "lon") Double lon,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset
+    ) {
+        return filialService.sortingByDistance(lat, lon, limit, offset);
+    }
+
+
     @Operation(summary = "'id'si bo'yicha 1ta filialni chiqarish",
             tags = {"filial", "get"})
     @GetMapping("/by-id")
@@ -104,20 +116,6 @@ public class FilialController {
             @RequestParam Boolean active
     ) {
         return filialService.isActive(id, active);
-    }
-
-
-    @Operation(summary = "Barcha filiallar, user uchun",
-            tags = {"filial", "get"})
-    @GetMapping("/all-filial-for-user")
-    public ResponseEntity<?> allFilialForUser(
-            @RequestParam Double lat,
-            @RequestParam Double lon,
-            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
-            @RequestParam(value = "offset", defaultValue = "0") Integer offset
-    ) {
-//        Map<Double, FilialDto> map = filialService.checkTheDistance(lat, lon, limit, offset);
-        return ResponseEntity.accepted().body("");
     }
 
 

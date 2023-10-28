@@ -2,7 +2,6 @@ package food.delivery.service.impl;
 
 import food.delivery.dto.FilialDto;
 import food.delivery.dto.response.GetResponse;
-import food.delivery.dto.response.ResponseDto;
 import food.delivery.dto.response.ValidatorDto;
 import food.delivery.dto.template.ImageDto;
 import food.delivery.helper.AppMessages;
@@ -108,7 +107,57 @@ public class FilialServiceImpl implements FilialService {
 
             GetResponse response = new GetResponse();
             response.setCount(0);
-            response.setPrevious(domain + "/filial/all-open/?active"+active+"&limit="
+            response.setPrevious(domain + "/filial/all-active/?active"+active+"&limit="
+                    +limit+"&offset=0");
+            response.setData(result);
+
+            if (filialDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(filialDtos.get(i));
+                if (filialDtos.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(filialDtos.size() >= offset+limit?domain + "/filial/all-active/?" +
+                    "active"+active+"&limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/filial/all-active/?active"+active+
+                    "&limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
+        } catch (RuntimeException e){
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+
+    @Override
+    public ResponseEntity<?> allOpenFilial(Integer limit, Integer offset) {
+        try {
+            List<FilialDto> filials = filialRepository.findAllByActive(true)
+                    .stream().map(filialMapper::toDto).toList();
+
+            LocalTime localTime = LocalTime.now();
+            List<FilialDto> filialDtos = new ArrayList<>();
+
+            for (FilialDto f : filials) {
+                Filial filial = filialMapper.toEntity(f);
+                LocalTime opening = filial.getOpeningTime().toLocalTime();
+                LocalTime closing = filial.getClosingTime().toLocalTime();
+
+                if (localTime.isAfter(opening) && localTime.isBefore(closing)) {
+                    filialDtos.add(f);
+                }
+            }
+            List<FilialDto> result = new ArrayList<>();
+
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/filial/all-open/?limit="
                     +limit+"&offset=0");
             response.setData(result);
 
@@ -124,12 +173,49 @@ public class FilialServiceImpl implements FilialService {
             response.setCount(result.size());
             response.setData(result);
             response.setNext(filialDtos.size() >= offset+limit?domain + "/filial/all-open/?" +
-                    "active"+active+"&limit="+limit+"&offset="+(offset+limit):null);
-            response.setPrevious(domain + "/filial/all-open/?active"+active+
-                    "&limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+                    "limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/filial/all-open/?" +
+                    "limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
 
             return ResponseEntity.ok().body(response);
-        } catch (RuntimeException e){
+        } catch (NullPointerException | DateTimeException | NumberFormatException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+
+    @Override
+    public ResponseEntity<?> sortingByDistance(Double lat, Double lon, Integer limit, Integer offset) {
+        try {
+            SortedMap<Double, FilialDto> map = checkTheDistanceForOrder(lat, lon);
+            List<FilialDto> result = new ArrayList<>();
+            List<FilialDto> filialDtos = new ArrayList<>(map.values());
+
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/filial/all-sorting/?lat="+lat+
+                    "&lon="+lon+"&limit="+limit+"&offset=0");
+            response.setData(result);
+
+            if (filialDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(filialDtos.get(i));
+                if (filialDtos.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(filialDtos.size() >= offset+limit?domain + "/filial/all-sorting/?lat="+lat+
+                    "&lon="+lon+"&limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/filial/all-sorting/?lat="+lat+
+                    "&lon="+lon+"&limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
+        } catch (NullPointerException | NumberFormatException | ArithmeticException e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -151,6 +237,7 @@ public class FilialServiceImpl implements FilialService {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
 
     @Override
     public ResponseEntity<?> updateFilial(FilialDto filialDto) {
@@ -194,6 +281,7 @@ public class FilialServiceImpl implements FilialService {
         }
     }
 
+
     @Override
     public ResponseEntity<?> deleteFilial(Integer id) {
         try {
@@ -205,6 +293,7 @@ public class FilialServiceImpl implements FilialService {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
 
     @Override
     public ResponseEntity<?> isActive(Integer id, Boolean active) {
@@ -229,7 +318,7 @@ public class FilialServiceImpl implements FilialService {
      * @return distance km and filialDto
      * */
     @Override
-    public SortedMap<Double, FilialDto> checkTheDistance(Double lat, Double lon) {
+    public SortedMap<Double, FilialDto> checkTheDistanceForOrder(Double lat, Double lon) {
         try {
             List<FilialDto> filials = filialRepository.findAllByActive(true)
                     .stream().map(filialMapper::toDto).toList();
@@ -249,7 +338,7 @@ public class FilialServiceImpl implements FilialService {
 
             SortedMap<Double, FilialDto> map = new TreeMap<>();
 
-            for (FilialDto f : filials) {
+            for (FilialDto f : filialDtos) {
                 Double filialLat = f.getLatitude();
                 Double filialLon = f.getLongitude();
 
@@ -282,38 +371,6 @@ public class FilialServiceImpl implements FilialService {
         } catch (ArithmeticException e){
             log.error(e.getMessage());
             return null;
-        }
-    }
-
-
-    private ResponseDto<?> allOpenBranch() {
-        return null;
-    }
-
-
-    @Override
-    public ResponseEntity<?> allOpenFilial(Integer limit, Integer offset) {
-        try {
-            List<FilialDto> filials = filialRepository.findAllByActive(true)
-                    .stream().map(filialMapper::toDto).toList();
-
-            LocalTime localTime = LocalTime.now();
-            List<FilialDto> filialDtos = new ArrayList<>();
-
-            for (FilialDto f : filials) {
-                Filial filial = filialMapper.toEntity(f);
-                LocalTime opening = filial.getOpeningTime().toLocalTime();
-                LocalTime closing = filial.getClosingTime().toLocalTime();
-
-                if (localTime.isAfter(opening) && localTime.isBefore(closing)) {
-                    filialDtos.add(f);
-                }
-            }
-
-            return ResponseEntity.ok().body(filialDtos);
-        } catch (NullPointerException | DateTimeException | NumberFormatException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

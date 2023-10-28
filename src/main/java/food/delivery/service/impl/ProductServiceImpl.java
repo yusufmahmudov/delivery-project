@@ -2,10 +2,9 @@ package food.delivery.service.impl;
 
 import food.delivery.dto.CategoryDto;
 import food.delivery.dto.ProductDto;
-import food.delivery.dto.response.ResponseDto;
+import food.delivery.dto.response.GetResponse;
 import food.delivery.dto.response.ValidatorDto;
 import food.delivery.dto.template.ImageDto;
-import food.delivery.helper.AppCode;
 import food.delivery.helper.AppMessages;
 import food.delivery.helper.StringHelper;
 import food.delivery.model.Category;
@@ -20,6 +19,7 @@ import food.delivery.service.mapper.CategoryMapper;
 import food.delivery.service.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static food.delivery.helper.AppCode.ERROR;
-import static food.delivery.helper.AppCode.VALIDATOR_ERROR;
 import static food.delivery.helper.AppMessages.*;
 
 @Slf4j
@@ -48,18 +46,16 @@ public class ProductServiceImpl implements ProductService {
     private final ImageService imageService;
     private final CategoryRepository categoryRepository;
     private final OrderRepository orderRepository;
+    @Value("${main.domain}")
+    private String domain;
 
 
     @Override
-    public ResponseDto<String> add(ProductDto productDto) {
+    public ResponseEntity<?> add(ProductDto productDto) {
         try {
             Optional<Category> optional = categoryRepository.findById(productDto.getCategoryDto().getId());
             if (optional.isEmpty()) {
-                return ResponseDto.<String>builder()
-                        .message("Category Id " + NOT_FOUND)
-                        .code(AppCode.NOT_FOUND)
-                        .success(false)
-                        .build();
+                return ResponseEntity.internalServerError().body("Category Id " + NOT_FOUND);
             }
 
             if (productDto.getActive() == null) productDto.setActive(false);
@@ -69,25 +65,16 @@ public class ProductServiceImpl implements ProductService {
             Product product = ProductMapper.toEntity(productDto);
             productRepository.save(product);
 
-            return ResponseDto.<String>builder()
-                    .code(AppCode.OK)
-                    .data("ID: " + product.getId())
-                    .message(SAVED)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(product);
         }catch (DataAccessException | PersistenceException | IllegalArgumentException e) {
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .code(ERROR)
-                    .success(false)
-                    .message(e.getMessage())
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<ProductDto> addProduct(
+    public ResponseEntity<?> addProduct(
             MultipartFile multipartFile,
             String name,
             Double price,
@@ -119,12 +106,7 @@ public class ProductServiceImpl implements ProductService {
             List<ValidatorDto> errors = new ArrayList<>();
             if (multipartFile == null || multipartFile.getOriginalFilename() == null) {
                 errors.add(new ValidatorDto("image", EMPTY_FIELD));
-                return ResponseDto.<ProductDto>builder()
-                        .code(VALIDATOR_ERROR)
-                        .errors(errors)
-                        .message(VALIDATOR_MESSAGE)
-                        .success(false)
-                        .build();
+                return ResponseEntity.internalServerError().body(errors);
             }
 
             if (productDto.getExtra() == null) productDto.setExtra(false);
@@ -146,93 +128,102 @@ public class ProductServiceImpl implements ProductService {
 
             productRepository.save(product);
 
-            return ResponseDto.<ProductDto>builder()
-                    .code(AppCode.OK)
-                    .data(ProductMapper.toDto(product))
-                    .message(SAVED)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(product);
         }catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<ProductDto>builder()
-                    .code(ERROR)
-                    .success(false)
-                    .message(e.getMessage())
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<List<ProductDto>> allProducts() {
+    public ResponseEntity<?> allProducts(Integer limit, Integer offset) {
         try {
             List<ProductDto> productDtoList = productRepository.findAll()
                     .stream().map(ProductMapper::toDto).toList();
 
-            return ResponseDto.<List<ProductDto>>builder()
-                    .data(productDtoList)
-                    .message(productDtoList.isEmpty() ? NOT_FOUND : AppMessages.OK)
-                    .success(true)
-                    .build();
-        }catch (RuntimeException e) {
+            List<ProductDto> result = new ArrayList<>();
+
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/product/all/?limit="
+                    +limit+"&offset=0");
+            response.setData(result);
+
+            if (productDtoList.size() <= offset) {
+                return ResponseEntity.ok().body(response);
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(productDtoList.get(i));
+                if (productDtoList.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(productDtoList.size() >= offset+limit?domain + "/product/all/?" +
+                    "limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/product/all/?" +
+                    "limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<List<ProductDto>>builder()
-                    .code(ERROR)
-                    .success(false)
-                    .message(e.getMessage())
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<List<ProductDto>> allByActive(Boolean active) {
+    public ResponseEntity<?> allByActive(Boolean active, Integer limit, Integer offset) {
         try {
             List<ProductDto> productDtoList = productRepository.findAllByActive(active)
                     .stream().map(ProductMapper::toDto).toList();
 
-            return ResponseDto.<List<ProductDto>>builder()
-                    .data(productDtoList)
-                    .message(productDtoList.isEmpty() ? NOT_FOUND : AppMessages.OK)
-                    .success(true)
-                    .code(AppCode.OK)
-                    .build();
+            List<ProductDto> result = new ArrayList<>();
+
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/product/all-active/" +
+                    "?active="+active+"&limit="+limit+"&offset=0");
+            response.setData(result);
+
+            if (productDtoList.size() <= offset) {
+                return ResponseEntity.ok().body(response);
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(productDtoList.get(i));
+                if (productDtoList.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(productDtoList.size() >= offset+limit?domain + "/product/all-active/" +
+                    "?active="+active+"&limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/product/all-active/" +
+                    "?active="+active+"&limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
         }catch (RuntimeException e) {
             log.error(e.getMessage());
-            return ResponseDto.<List<ProductDto>>builder()
-                    .code(ERROR)
-                    .success(false)
-                    .message(e.getMessage())
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<ProductDto> getById(Integer id) {
+    public ResponseEntity<?> getById(Integer id) {
         try {
             Optional<Product> optional = productRepository.findById(id);
             if (optional.isEmpty()) {
-                return ResponseDto.<ProductDto>builder()
-                        .success(false)
-                        .message(AppMessages.NOT_FOUND)
-                        .code(AppCode.NOT_FOUND)
-                        .build();
+                return ResponseEntity.internalServerError().body(NOT_FOUND);
             }
             ProductDto productDto = ProductMapper.toDto(optional.get());
-            return ResponseDto.<ProductDto>builder()
-                    .data(productDto)
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(productDto);
         }catch (DataAccessException | IllegalArgumentException e){
             log.error(e.getMessage());
-            return ResponseDto.<ProductDto>builder()
-                    .message(e.getMessage())
-                    .code(ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -246,16 +237,39 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ResponseEntity<?> getAllExtraProduct() {
+    public ResponseEntity<?> getAllExtraProduct(Integer limit, Integer offset) {
         List<ProductDto> products = productRepository.findAllByExtra(true)
                 .stream().map(ProductMapper::toDto).toList();
+        List<ProductDto> result = new ArrayList<>();
 
-        return ResponseEntity.ok().body(products);
+        GetResponse response = new GetResponse();
+        response.setCount(0);
+        response.setPrevious(domain + "/product/get-all-extra/" +
+                "?limit="+limit+"&offset=0");
+        response.setData(result);
+
+        if (products.size() <= offset) {
+            return ResponseEntity.ok().body(response);
+        }
+
+        for (int i = offset; i < offset+limit; i++) {
+            result.add(products.get(i));
+            if (products.size()-1 == i) break;
+        }
+
+        response.setCount(result.size());
+        response.setData(result);
+        response.setNext(products.size() >= offset+limit?domain + "/product/get-all-extra/" +
+                "?limit="+limit+"&offset="+(offset+limit):null);
+        response.setPrevious(domain + "/product/get-all-extra/" +
+                "?limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+
+        return ResponseEntity.ok().body(response);
     }
 
 
     @Override
-    public ResponseEntity<?> getAllExtraProductById(Integer id) {
+    public ResponseEntity<?> getAllExtraProductById(Integer id, Integer limit, Integer offset) {
         Optional<Product> optional = productRepository.findById(id);
         if (optional.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -267,12 +281,36 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDto> products = productRepository.findByIdIn(list)
                 .stream().map(ProductMapper::toDto).toList();;
 
-        return ResponseEntity.ok().body(products);
+        List<ProductDto> result = new ArrayList<>();
+
+        GetResponse response = new GetResponse();
+        response.setCount(0);
+        response.setPrevious(domain + "/product/get-all-extra-by-id/" +
+                "?id="+id+"&limit="+limit+"&offset=0");
+        response.setData(result);
+
+        if (products.size() <= offset) {
+            return ResponseEntity.ok().body(response);
+        }
+
+        for (int i = offset; i < offset+limit; i++) {
+            result.add(products.get(i));
+            if (products.size()-1 == i) break;
+        }
+
+        response.setCount(result.size());
+        response.setData(result);
+        response.setNext(products.size() >= offset+limit?domain + "/product/get-all-extra-by-id/" +
+                "?id="+id+"limit="+limit+"&offset="+(offset+limit):null);
+        response.setPrevious(domain + "/product/get-all-extra-by-id/" +
+                "?id="+id+"limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+
+        return ResponseEntity.ok().body(response);
     }
 
 
     @Override
-    public ResponseEntity<?> getAllBonusProductById(Integer id) {
+    public ResponseEntity<?> getAllBonusProductById(Integer id, Integer limit, Integer offset) {
         Optional<Product> optional = productRepository.findById(id);
         if (optional.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -284,7 +322,31 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDto> products = productRepository.findByIdIn(bonusIds)
                 .stream().map(ProductMapper::toDto).toList();
 
-        return ResponseEntity.ok().body(products);
+        List<ProductDto> result = new ArrayList<>();
+
+        GetResponse response = new GetResponse();
+        response.setCount(0);
+        response.setPrevious(domain + "/product/get-all-bonus-by-id/" +
+                "?id="+id+"&limit="+limit+"&offset=0");
+        response.setData(result);
+
+        if (products.size() <= offset) {
+            return ResponseEntity.ok().body(response);
+        }
+
+        for (int i = offset; i < offset+limit; i++) {
+            result.add(products.get(i));
+            if (products.size()-1 == i) break;
+        }
+
+        response.setCount(result.size());
+        response.setData(result);
+        response.setNext(products.size() >= offset+limit?domain + "/product/get-all-bonus-by-id/" +
+                "?id="+id+"limit="+limit+"&offset="+(offset+limit):null);
+        response.setPrevious(domain + "/product/get-all-bonus-by-id/" +
+                "?id="+id+"limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+
+        return ResponseEntity.ok().body(response);
     }
 
 
@@ -327,61 +389,36 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ResponseDto<String> deleteById(Integer id) {
+    public ResponseEntity<?> deleteById(Integer id) {
         try {
             productRepository.deleteById(id);
 
-            return ResponseDto.<String>builder()
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body("Deleted!");
         }catch (DataAccessException | IllegalArgumentException e){
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .code(ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<ProductDto> updateProduct(ProductDto productDto) {
+    public ResponseEntity<?> updateProduct(ProductDto productDto) {
         try {
             if (productDto.getId() == null) {
-                return ResponseDto.<ProductDto>builder()
-                        .success(false)
-                        .message("Id " + EMPTY_FIELD)
-                        .code(ERROR)
-                        .build();
+                return ResponseEntity.ok().body("Id " + EMPTY_FIELD);
             }
             Optional<Product> optional = productRepository.findById(productDto.getId());
             if (optional.isEmpty()){
-                return ResponseDto.<ProductDto>builder()
-                        .success(true)
-                        .message(AppMessages.NOT_FOUND)
-                        .code(AppCode.NOT_FOUND)
-                        .build();
+                return ResponseEntity.internalServerError().body(AppMessages.NOT_FOUND);
             }
             Optional<Category> optional1 = categoryRepository.findById(productDto.getCategoryDto().getId());
             if (optional1.isEmpty()) {
-                return ResponseDto.<ProductDto>builder()
-                        .message("Category Id " + NOT_FOUND)
-                        .code(AppCode.NOT_FOUND)
-                        .success(false)
-                        .build();
+                return ResponseEntity.internalServerError().body("Category Id " + NOT_FOUND);
             }
 
             Product product1 = optional.get();
             List<ValidatorDto> errors = validatorService.validateProduct(productDto);
             if (!errors.isEmpty()){
-                return ResponseDto.<ProductDto>builder()
-                        .code(VALIDATOR_ERROR)
-                        .errors(errors)
-                        .message(VALIDATOR_MESSAGE)
-                        .success(false)
-                        .build();
+                return ResponseEntity.internalServerError().body(VALIDATOR_MESSAGE);
             }
             Product product2 = ProductMapper.toEntity(productDto);
 
@@ -395,82 +432,48 @@ public class ProductServiceImpl implements ProductService {
 
             productRepository.save(product1);
             productDto = ProductMapper.toDto(product1);
-            return ResponseDto.<ProductDto>builder()
-                    .data(productDto)
-                    .code(AppCode.OK)
-                    .message(AppMessages.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(productDto);
         }catch (NullPointerException | IllegalArgumentException | DataAccessException | NoSuchElementException e){
             log.error(e.getMessage());
-            return ResponseDto.<ProductDto>builder()
-                    .message(e.getMessage())
-                    .code(ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<String> setIsActive(Integer id, Boolean active) {
+    public ResponseEntity<?> setIsActive(Integer id, Boolean active) {
         try {
             Optional<Product> optional = productRepository.findById(id);
             if (optional.isEmpty()) {
-                return ResponseDto.<String>builder()
-                        .success(true)
-                        .message(NOT_FOUND)
-                        .code(AppCode.NOT_FOUND)
-                        .build();
+                return ResponseEntity.internalServerError().body(NOT_FOUND);
             }
             Product product = optional.get();
             product.setActive(active);
             productRepository.save(product);
 
-            return ResponseDto.<String>builder()
-                    .data(product.getActive() ? "True" : "False")
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().body(product);
         }catch (DataAccessException | NoSuchElementException e){
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .code(ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @Override
-    public ResponseDto<String> setDiscount(Integer id, Double discount) {
+    public ResponseEntity<?> setDiscount(Integer id, Double discount) {
         try {
             Optional<Product> optional = productRepository.findById(id);
             if (optional.isEmpty()) {
-                return ResponseDto.<String>builder()
-                        .success(true)
-                        .message(NOT_FOUND)
-                        .code(AppCode.NOT_FOUND)
-                        .build();
+                return ResponseEntity.internalServerError().body(NOT_FOUND);
             }
 
             Product product = optional.get();
             product.setDiscount(discount);
             productRepository.save(product);
 
-            return ResponseDto.<String>builder()
-                    .data(product.getName() + " ga " + discount + " foizli chegirma o'rnatildi")
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .success(true)
-                    .build();
+            return ResponseEntity.ok().
+                    body(product.getName() + " ga " + discount + " foizli chegirma o'rnatildi");
         }catch (DataAccessException | NoSuchElementException e){
             log.error(e.getMessage());
-            return ResponseDto.<String>builder()
-                    .message(e.getMessage())
-                    .code(ERROR)
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

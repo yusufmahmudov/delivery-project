@@ -1,12 +1,9 @@
 package food.delivery.service.impl;
 
 import food.delivery.dto.*;
-import food.delivery.dto.response.ResponseDto;
+import food.delivery.dto.response.GetResponse;
 import food.delivery.dto.response.ValidatorDto;
-import food.delivery.dto.template.ImageDto;
-import food.delivery.helper.AppCode;
 import food.delivery.helper.AppMessages;
-import food.delivery.model.Image;
 import food.delivery.model.User;
 import food.delivery.repository.UserRepository;
 import food.delivery.security.SecurityUtil;
@@ -16,11 +13,11 @@ import food.delivery.service.ValidatorService;
 import food.delivery.service.mapper.interfaces.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -38,121 +35,109 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final ImageService imageService;
+    @Value("${main.domain}")
+    private String domain;
+
 
 
     @Override
-    public ResponseDto<List<UserDto>> allUser() {
+    public ResponseEntity<?> allUser(Integer limit, Integer offset) {
         try {
             List<UserDto> userDtos = userRepository.findAll()
                     .stream().map(userMapper::toDto).toList();
 
-            return ResponseDto.<List<UserDto>>builder()
-                    .data(userDtos)
-                    .code(AppCode.OK)
-                    .message(AppMessages.OK)
-                    .success(true)
-                    .build();
-        }catch (RuntimeException e){
+            List<UserDto> result = new ArrayList<>();
+
+            GetResponse response = new GetResponse();
+            response.setCount(0);
+            response.setPrevious(domain + "/user/all/?limit="
+                    +limit+"&offset=0");
+            response.setData(result);
+
+            if (userDtos.size() <= offset) {
+                return ResponseEntity.ok().body(response);
+            }
+
+            for (int i = offset; i < offset+limit; i++) {
+                result.add(userDtos.get(i));
+                if (userDtos.size()-1 == i) break;
+            }
+
+            response.setCount(result.size());
+            response.setData(result);
+            response.setNext(userDtos.size() >= offset+limit?domain + "/user/all/?" +
+                    "limit="+limit+"&offset="+(offset+limit):null);
+            response.setPrevious(domain + "/user/all/?" +
+                    "limit="+limit+"&offset="+(Math.max(offset-limit, 0)));
+
+            return ResponseEntity.ok().body(response);
+        } catch (RuntimeException e){
             log.error(e.getMessage());
-            return ResponseDto.<List<UserDto>>builder()
-                    .code(AppCode.ERROR)
-                    .message(e.getMessage())
-                    .success(false)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
 
     @Override
-    public ResponseDto<UserDto> getById() {
+    public ResponseEntity<?> getById() {
         try {
             Long id = SecurityUtil.getUserDto().getId();
             Optional<User> optional = userRepository.findById(id);
             if (optional.isEmpty()){
-                return ResponseDto.<UserDto>builder()
-                        .success(false)
-                        .message(AppMessages.NOT_FOUND)
-                        .code(AppCode.NOT_FOUND)
-                        .build();
+                return ResponseEntity.internalServerError().body(AppMessages.NOT_FOUND);
             }
             UserDto userDto = userMapper.toDto(optional.get());
 //            userDto.setUsername(userDto.getUsername().substring(5));
 
-            return ResponseDto.<UserDto>builder()
-                    .success(true)
-                    .data(userDto)
-                    .message(AppMessages.OK)
-                    .code(AppCode.OK)
-                    .build();
+            return ResponseEntity.ok().body(userDto);
         }catch (NoSuchElementException | NullPointerException e) {
             log.error(e.getMessage());
-            return ResponseDto.<UserDto>builder()
-                    .success(false)
-                    .message(e.getMessage())
-                    .code(AppCode.ERROR)
-                    .build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+
     @Override
-    public ResponseDto<String> update(UserDto userDto) {
-//        try {
-//            if (userDto.getId() == null) {
-//                return ResponseDto.<UserDto>builder()
-//                        .success(false)
-//                        .message("Id " + AppMessages.EMPTY_FIELD)
-//                        .code(AppCode.ERROR)
-//                        .build();
+    public ResponseEntity<?> update(UserDto userDto) {
+        try {
+            if (userDto.getId() == null) {
+                return ResponseEntity.ok().body("Id " + AppMessages.EMPTY_FIELD);
+            }
+
+            List<ValidatorDto> errors = validatorService.validateUser(userDto);
+            if (!errors.isEmpty()) {
+                return ResponseEntity.internalServerError().body(AppMessages.VALIDATOR_MESSAGE);
+            }
+            Long id = SecurityUtil.getUserDto().getId();
+            User user = userRepository.findById(id).get();
+
+//            if (userDto.getUsername() != null) {
+//                String username = "user_" + userDto.getUsername();
+//                if (userRepository.existsByUsername(username)) {
+//                    return ResponseDto.<String>builder()
+//                            .code(AppCode.DATABASE_ERROR)
+//                            .success(false)
+//                            .message("Error: Username is already taken!")
+//                            .build();
+//                }
+//                user.setUsername(username);
+//            }
+//            if (userDto.getPassword() != null) {
+//                String password = passwordEncoder.encode(userDto.getPassword());
+//                user.setPassword(password);
 //            }
 
-//            List<ValidatorDto> errors = validatorService.validateUser(userDto);
-//            if (!errors.isEmpty()) {
-//                return ResponseDto.<String>builder()
-//                        .code(AppCode.VALIDATOR_ERROR)
-//                        .errors(errors)
-//                        .message(AppMessages.VALIDATOR_MESSAGE)
-//                        .success(false)
-//                        .build();
-//            }
-//            Long id = SecurityUtil.getUserDto().getId();
-//            User user = userRepository.findById(id).get();
-//
-////            if (userDto.getUsername() != null) {
-////                String username = "user_" + userDto.getUsername();
-////                if (userRepository.existsByUsername(username)) {
-////                    return ResponseDto.<String>builder()
-////                            .code(AppCode.DATABASE_ERROR)
-////                            .success(false)
-////                            .message("Error: Username is already taken!")
-////                            .build();
-////                }
-////                user.setUsername(username);
-//            }
-////            if (userDto.getPassword() != null) {
-////                String password = passwordEncoder.encode(userDto.getPassword());
-////                user.setPassword(password);
-////            }
-////
-////            user.setFullName(userDto.getFullName() == null ? user.getFullName() : userDto.getFullName());
-////            user.setPhoneNum1(userDto.getPhoneNum1() == null ? user.getPhoneNum1() : userDto.getPhoneNum1());
-////            user.setPhoneNum2(userDto.getPhoneNum2() == null ? user.getPhoneNum2() : userDto.getPhoneNum2());
-//
-////            userRepository.save(user);
-//
-//            return ResponseDto.<String>builder()
-//                    .success(true)
-//                    .message(AppMessages.SAVED)
-//                    .code(AppCode.OK)
-//                    .build();
-//        }catch (NullPointerException | IllegalArgumentException | DataAccessException | NoSuchElementException e) {
-//            log.error(e.getMessage());
-//            return ResponseDto.<String>builder()
-//                    .success(false)
-//                    .message(e.getMessage())
-//                    .code(AppCode.ERROR)
-//                    .build();
-//        }
-        return null;
+            user.setFullName(userDto.getFullName() == null ? user.getFullName() : userDto.getFullName());
+            user.setPhoneNum1(userDto.getPhoneNum1() == null ? user.getPhoneNum1() : userDto.getPhoneNum1());
+            user.setPhoneNum2(userDto.getPhoneNum2() == null ? user.getPhoneNum2() : userDto.getPhoneNum2());
+
+            userRepository.save(user);
+
+            return ResponseEntity.ok().body(userDto);
+        } catch (NullPointerException | IllegalArgumentException | DataAccessException | NoSuchElementException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 

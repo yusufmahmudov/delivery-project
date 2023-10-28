@@ -80,8 +80,7 @@ public class AuthController {
     public ResponseEntity<?> getLogin(
             @RequestParam Long chatId
     ) {
-        List<ProductDto> products = productService.allProducts().getData();
-        return ResponseEntity.ok().body("product");
+        return productService.allProducts(10, 0);
     }
 
 }

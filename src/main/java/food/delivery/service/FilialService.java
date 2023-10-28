@@ -18,6 +18,10 @@ public interface FilialService {
 
     ResponseEntity<?> allFilialIsActive(Boolean active, Integer limit, Integer offset);
 
+    ResponseEntity<?> allOpenFilial(Integer limit, Integer offset);
+
+    ResponseEntity<?> sortingByDistance(Double lat, Double lon, Integer limit, Integer offset);
+
     ResponseEntity<?> getById(Integer id);
 
     ResponseEntity<?> updateFilial(FilialDto filialDto);
@@ -26,9 +30,7 @@ public interface FilialService {
 
     ResponseEntity<?> isActive(Integer id, Boolean active);
 
-    SortedMap<Double, FilialDto> checkTheDistance(Double lat, Double lon);
-
-    ResponseEntity<?> allOpenFilial(Integer limit, Integer offset);
+    SortedMap<Double, FilialDto> checkTheDistanceForOrder(Double lat, Double lon);
 
     ResponseEntity<?> uploadImage(MultipartFile multipartFile, Integer filialId);
 

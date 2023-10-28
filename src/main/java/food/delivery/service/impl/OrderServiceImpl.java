@@ -149,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
         Double lat = location.getLatitude();
         Double lon = location.getLongitude();
 
-        SortedMap<Double, FilialDto> filialDtoMap = filialService.checkTheDistance(lat, lon);
+        SortedMap<Double, FilialDto> filialDtoMap = filialService.checkTheDistanceForOrder(lat, lon);
 
         for (Double dis : filialDtoMap.keySet()){
             if (dis > deliveryRadius) {

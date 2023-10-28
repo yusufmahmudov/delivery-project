@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface ProductService {
 
-    ResponseDto<String> add(ProductDto productDto);
+    ResponseEntity<?> add(ProductDto productDto);
 
-    ResponseDto<ProductDto> addProduct(
+    ResponseEntity<?> addProduct(
             MultipartFile multipartFile,
             String name,
             Double price,
@@ -23,31 +23,31 @@ public interface ProductService {
             String bounsList,
             Integer categoryId);
 
-    ResponseDto<List<ProductDto>> allProducts();
+    ResponseEntity<?> allProducts(Integer limit, Integer offset);
 
-    ResponseDto<List<ProductDto>> allByActive(Boolean active);
+    ResponseEntity<?> allByActive(Boolean active, Integer limit, Integer offset);
 
-    ResponseDto<ProductDto> getById(Integer id);
+    ResponseEntity<?> getById(Integer id);
 
     ResponseEntity<?> weekBestProducts();
 
-    ResponseEntity<?> getAllExtraProduct();
+    ResponseEntity<?> getAllExtraProduct(Integer limit, Integer offset);
 
-    ResponseEntity<?> getAllExtraProductById(Integer id);
+    ResponseEntity<?> getAllExtraProductById(Integer id, Integer limit, Integer offset);
 
-    ResponseEntity<?> getAllBonusProductById(Integer id);
+    ResponseEntity<?> getAllBonusProductById(Integer id, Integer limit, Integer offset);
 
     ResponseEntity<?> setBonusList(Integer id, String bonusList);
 
     ResponseEntity<?> setExtraList(Integer id, String extraList);
 
-    ResponseDto<String> deleteById(Integer id);
+    ResponseEntity<?> deleteById(Integer id);
 
-    ResponseDto<ProductDto> updateProduct(ProductDto productDto);
+    ResponseEntity<?> updateProduct(ProductDto productDto);
 
-    ResponseDto<String> setIsActive(Integer id, Boolean active);
+    ResponseEntity<?> setIsActive(Integer id, Boolean active);
 
-    ResponseDto<String> setDiscount(Integer id, Double discount);
+    ResponseEntity<?> setDiscount(Integer id, Double discount);
 
     ResponseEntity<?> updateImage(MultipartFile multipartFile, Integer id);
 

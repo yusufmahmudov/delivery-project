@@ -57,23 +57,9 @@ public class AuthServiceImpl implements AuthService {
     private static final Random random = new Random();
 
 
-    public ResponseDto<String> registerEmployee(EmployeeDto employeeDto) {
-
-        String username = "employee_";
-        if (employeeRepository.existsByUsername(username)) {
-            return ResponseDto.<String>builder()
-                    .code(AppCode.DATABASE_ERROR)
-                    .success(false)
-                    .message("Error: Username is already taken!")
-                    .build();
-        }
-
-        String salt = StringHelper.generateSalt(8);
+    public ResponseEntity<?> registerEmployee(EmployeeDto employeeDto) {
 
         Employee employee = employeeMapper.toEntity(employeeDto);
-        employee.setUsername(username);
-        employee.setPassword(passwordEncoder.encode(employeeDto.getAddress()));
-        employee.setSalt(salt);
         if (employee.getActive() == null) {
             employee.setActive(false);
         }
@@ -81,46 +67,30 @@ public class AuthServiceImpl implements AuthService {
         Set<String> setRoles = employeeDto.getRole();
         Set<Role> roles = new HashSet<>();
 
-        if (setRoles == null) {
-            return ResponseDto.<String>builder()
-                    .code(AppCode.VALIDATOR_ERROR)
-                    .success(false)
-                    .message("role " + AppMessages.EMPTY_FIELD)
-                    .build();
-        } else {
-            setRoles.forEach(role -> {
-                switch (role) {
-                    case "admin" -> {
-                        Role adminRole = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                    }
-                    case "mod" -> {
-                        Role modRole = roleRepository.findByName(SecurityUtil.MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-                    }
-                    case "courier" -> {
-                        Role courierRole = roleRepository.findByName(SecurityUtil.ROLE_COURIER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(courierRole);
-                    }
-                    default -> {
-                        Role userRole = roleRepository.findByName(SecurityUtil.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    }
+        for (String s : setRoles) {
+            switch (s) {
+                case "admin" -> {
+                    Role adminRole = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(adminRole);
                 }
-            });
+                case "mod" -> {
+                    Role modRole = roleRepository.findByName(SecurityUtil.MODERATOR)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(modRole);
+                }
+                case "courier" -> {
+                    Role courierRole = roleRepository.findByName(SecurityUtil.ROLE_COURIER)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(courierRole);
+                }
+            }
         }
 
         employee.setRoles(roles);
         employeeRepository.save(employee);
 
-        return ResponseDto.<String>builder()
-                .code(AppCode.OK)
-                .success(true)
-                .message(AppMessages.SAVED)
-                .build();
+        return ResponseEntity.ok().body(employee);
     }
 
 

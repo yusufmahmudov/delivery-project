@@ -28,7 +28,16 @@ public class AuthController {
     private final ProductService productService;
 
 
-//    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @Operation(summary = "MODERATOR xodimlarni qo'shish: " +
+            "admin, mod, courier", tags = {"auth", "post"})
+    @PostMapping("/register")
+    public ResponseEntity<?> registerEmployee(
+            @RequestBody @NotNull EmployeeDto employeeDto) {
+        return authService.registerEmployee(employeeDto);
+    }
+
+
+    //    @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @Operation(summary = "MODERATOR xodimlar uchun role belgilaydi, default employee. " +
             "admin, mod, courier", tags = {"auth", "patch"})
     @PatchMapping("/role-employee")

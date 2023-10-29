@@ -13,6 +13,9 @@ import java.util.Set;
 
 public interface AuthService {
 
+
+    ResponseEntity<?> registerEmployee(EmployeeDto employeeDto);
+
     ResponseEntity<?> roleForEmployee(EmployeeRole employeeRole);
 
     ResponseEntity<?> createEmployeeAccount(EmployeeDto employeeDto);

@@ -73,6 +73,10 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
         roleSet.add(moderator);
 
+        Role admin = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roleSet.add(admin);
+
         employee.setRoles(roleSet);
         employee.setCreatedAt(LocalDateTime.now());
         employee.setSalt(salt);

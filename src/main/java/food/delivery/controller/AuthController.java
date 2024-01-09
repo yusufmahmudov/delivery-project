@@ -28,8 +28,7 @@ public class AuthController {
     private final ProductService productService;
 
 
-    @Operation(summary = "MODERATOR xodimlarni qo'shish: " +
-            "admin, mod, courier", tags = {"auth", "post"})
+    @Operation(summary = "Register uchun api", tags = {"auth", "post"})
     @PostMapping("/register")
     public ResponseEntity<?> registerEmployee(
             @RequestBody @NotNull EmployeeDto employeeDto) {
@@ -38,8 +37,8 @@ public class AuthController {
 
 
     //    @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @Operation(summary = "MODERATOR xodimlar uchun role belgilaydi, default employee. " +
-            "admin, mod, courier", tags = {"auth", "patch"})
+    @Operation(summary = "MODERATOR xodimlar uchun role belgilaydi. " +
+            "admin, mod, employee", tags = {"auth", "patch"})
     @PatchMapping("/role-employee")
     public ResponseEntity<?> roleForEmployee(
             @RequestBody EmployeeRole employeeRole) {
@@ -47,21 +46,12 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "Xodim uchun. Telefon raqam yuboriladi",
+    @Operation(summary = "Xodim uchun Login. Telefon raqam va password yuboriladi. token qaytaradi",
             tags = {"auth", "post"})
-    @PostMapping("/sign/employee")
-    public ResponseEntity<?> createEmployeeAccount(
+    @PostMapping("login/employee")
+    public ResponseEntity<?> loginEmployee(
             @RequestBody @NotNull EmployeeDto employeeDto) {
-        return authService.createEmployeeAccount(employeeDto);
-    }
-
-
-    @Operation(summary = "Xodim uchun Login. Telefon raqam va code yuboriladi. token qaytaradi",
-            tags = {"auth", "post"})
-    @PostMapping("send-code/employee")
-    public ResponseEntity<?> loginEmployeeCheckCode(
-            @RequestBody @NotNull EmployeeDto employeeDto) {
-        return authService.loginEmployeeCheckCode(employeeDto);
+        return authService.loginEmployee(employeeDto);
     }
 
 
@@ -91,5 +81,14 @@ public class AuthController {
     ) {
         return productService.allProducts(10, 0);
     }
+
+
+//    @Operation(summary = "Xodim uchun. Telefon raqam yuboriladi",
+//            tags = {"auth", "post"})
+//    @PostMapping("/sign/employee")
+//    public ResponseEntity<?> createEmployeeAccount(
+//            @RequestBody @NotNull EmployeeDto employeeDto) {
+//        return authService.createEmployeeAccount(employeeDto);
+//    }
 
 }

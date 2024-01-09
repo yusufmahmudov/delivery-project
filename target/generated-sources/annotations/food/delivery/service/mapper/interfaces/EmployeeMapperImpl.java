@@ -4,6 +4,7 @@ import food.delivery.dto.EmployeeDto;
 import food.delivery.dto.EmployeeDto.EmployeeDtoBuilder;
 import food.delivery.model.Employee;
 import food.delivery.model.Employee.EmployeeBuilder;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.annotation.processing.Generated;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-09-13T19:07:16+0500",
+    date = "2024-01-05T23:27:30+0500",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 20.0.2 (Oracle Corporation)"
 )
 @Component
@@ -26,14 +27,15 @@ public class EmployeeMapperImpl implements EmployeeMapper {
         EmployeeBuilder employee = Employee.builder();
 
         if ( employeeDto.getBirthDate() != null ) {
-            employee.birthDate( LocalDateTime.parse( employeeDto.getBirthDate(), DateTimeFormatter.ofPattern( "dd.MM.yyyy" ) ) );
+            employee.birthDate( LocalDate.parse( employeeDto.getBirthDate(), DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) ) );
         }
         if ( employeeDto.getCreatedAt() != null ) {
-            employee.createdAt( LocalDateTime.parse( employeeDto.getCreatedAt(), DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ) ) );
+            employee.createdAt( LocalDateTime.parse( employeeDto.getCreatedAt(), DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm" ) ) );
         }
         employee.id( employeeDto.getId() );
         employee.firstName( employeeDto.getFirstName() );
         employee.lastName( employeeDto.getLastName() );
+        employee.password( employeeDto.getPassword() );
         employee.phoneNum1( employeeDto.getPhoneNum1() );
         employee.phoneNum2( employeeDto.getPhoneNum2() );
         employee.address( employeeDto.getAddress() );
@@ -56,16 +58,17 @@ public class EmployeeMapperImpl implements EmployeeMapper {
         EmployeeDtoBuilder employeeDto = EmployeeDto.builder();
 
         if ( employee.getBirthDate() != null ) {
-            employeeDto.birthDate( DateTimeFormatter.ofPattern( "dd.MM.yyyy" ).format( employee.getBirthDate() ) );
+            employeeDto.birthDate( DateTimeFormatter.ofPattern( "yyyy-MM-dd" ).format( employee.getBirthDate() ) );
         }
         if ( employee.getCreatedAt() != null ) {
-            employeeDto.createdAt( DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ).format( employee.getCreatedAt() ) );
+            employeeDto.createdAt( DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm" ).format( employee.getCreatedAt() ) );
         }
         employeeDto.id( employee.getId() );
         employeeDto.firstName( employee.getFirstName() );
         employeeDto.lastName( employee.getLastName() );
         employeeDto.phoneNum1( employee.getPhoneNum1() );
         employeeDto.phoneNum2( employee.getPhoneNum2() );
+        employeeDto.password( employee.getPassword() );
         employeeDto.address( employee.getAddress() );
         employeeDto.active( employee.getActive() );
         employeeDto.gender( employee.getGender() );

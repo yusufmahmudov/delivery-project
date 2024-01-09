@@ -97,15 +97,15 @@ public class EmployeeController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_MODERATOR')")
-    @Operation(summary = "Xodim rolelarini o'zgartirish. by-id",
-            tags = {"employee", "patch"})
-    @PatchMapping("/set-roles")
-    public ResponseEntity<?> setRoles(
-            @RequestBody  Set<String> roles,
-            @RequestParam Integer id) {
-        return employeeService.setRoles(roles, id);
-    }
+//    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+//    @Operation(summary = "Xodim rolelarini o'zgartirish. by-id",
+//            tags = {"employee", "patch"})
+//    @PatchMapping("/set-roles")
+//    public ResponseEntity<?> setRoles(
+//            @RequestBody  Set<String> roles,
+//            @RequestParam Integer id) {
+//        return employeeService.setRoles(roles, id);
+//    }
 
 
 

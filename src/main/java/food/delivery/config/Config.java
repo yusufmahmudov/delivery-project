@@ -1,5 +1,6 @@
 package food.delivery.config;
 
+import food.delivery.model.Employee;
 import food.delivery.model.Role;
 import food.delivery.repository.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -41,18 +42,24 @@ public class Config {
         role2.setId(2);
         roleRepository.save(role2);
 
-        role3.setName("ROLE_COURIER");
+        role3.setName("ROLE_MODERATOR");
         role3.setId(3);
         roleRepository.save(role3);
 
-        role4.setName("ROLE_MODERATOR");
+        role4.setName("ROLE_EMPLOYEE");
         role4.setId(4);
         roleRepository.save(role4);
 
-        role5.setName("ROLE_EMPLOYEE");
+        role5.setName("NEW_EMPLOYEE");
         role5.setId(5);
         roleRepository.save(role5);
     }
 
+
+    @PostConstruct
+    public void createAdmin() {
+        Employee employee = new Employee();
+
+    }
 
 }

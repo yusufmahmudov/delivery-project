@@ -4,6 +4,7 @@ package food.delivery.model;
 import javax.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,8 +45,8 @@ public class Employee {
     @Column(name = "phone_num2", length = 20)
     private String phoneNum2;
 
-    @Column(name = "tool_word", length = 20)
-    private String toolWord;
+//    @Column(name = "tool_word", length = 20)
+//    private String toolWord;
 
     @Column(name = "address", length = 120)
     private String address;
@@ -66,7 +67,7 @@ public class Employee {
     private String passportNo;
 
     @Column(name = "birth_date")
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

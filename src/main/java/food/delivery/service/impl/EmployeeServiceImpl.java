@@ -225,7 +225,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             if (employeeDto.getBirthDate() != null) {
                 LocalDateTime birth = LocalDateTime.parse(employeeDto.getBirthDate());
-                employee.setBirthDate(birth);
+//                employee.setBirthDate(birth);
             }
 
             employeeRepository.save(employee);
@@ -253,54 +253,54 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
-    @Override
-    public ResponseEntity<?> setRoles(Set<String> setRoles, Integer id) {
-        try {
-            Employee employee = employeeRepository.findById(id).get();
-            Set<Role> roles = new HashSet<>();
-
-            if (setRoles == null) {
-                return ResponseEntity.internalServerError().body("role " + AppMessages.EMPTY_FIELD);
-            } else {
-                setRoles.forEach(role -> {
-                    switch (role) {
-                        case "admin" -> {
-                            Role adminRole = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(adminRole);
-                        }
-                        case "mod" -> {
-                            Role modRole = roleRepository.findByName(SecurityUtil.MODERATOR)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(modRole);
-                        }
-                        case "courier" -> {
-                            Role courierRole = roleRepository.findByName(SecurityUtil.ROLE_COURIER)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(courierRole);
-                        }
-                        case "employee" -> {
-                            Role employeeRole = roleRepository.findByName(SecurityUtil.ROLE_EMPLOYEE)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(employeeRole);
-                        }
-                        default -> {
-                            Role userRole = roleRepository.findByName(SecurityUtil.ROLE_USER)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        }
-                    }
-                });
-            }
-
-            employee.setRoles(roles);
-            employeeRepository.save(employee);
-
-            return ResponseEntity.ok().body(employee.getRoles());
-        }catch (RuntimeException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-    }
+//    @Override
+//    public ResponseEntity<?> setRoles(Set<String> setRoles, Integer id) {
+//        try {
+//            Employee employee = employeeRepository.findById(id).get();
+//            Set<Role> roles = new HashSet<>();
+//
+//            if (setRoles == null) {
+//                return ResponseEntity.internalServerError().body("role " + AppMessages.EMPTY_FIELD);
+//            } else {
+//                setRoles.forEach(role -> {
+//                    switch (role) {
+//                        case "admin" -> {
+//                            Role adminRole = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
+//                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                            roles.add(adminRole);
+//                        }
+//                        case "mod" -> {
+//                            Role modRole = roleRepository.findByName(SecurityUtil.MODERATOR)
+//                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                            roles.add(modRole);
+//                        }
+//                        case "courier" -> {
+//                            Role courierRole = roleRepository.findByName(SecurityUtil.ROLE_COURIER)
+//                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                            roles.add(courierRole);
+//                        }
+//                        case "employee" -> {
+//                            Role employeeRole = roleRepository.findByName(SecurityUtil.ROLE_EMPLOYEE)
+//                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                            roles.add(employeeRole);
+//                        }
+//                        default -> {
+//                            Role userRole = roleRepository.findByName(SecurityUtil.ROLE_USER)
+//                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                        }
+//                    }
+//                });
+//            }
+//
+//            employee.setRoles(roles);
+//            employeeRepository.save(employee);
+//
+//            return ResponseEntity.ok().body(employee.getRoles());
+//        }catch (RuntimeException e) {
+//            log.error(e.getMessage());
+//            return ResponseEntity.internalServerError().body(e.getMessage());
+//        }
+//    }
 
 
     @Override

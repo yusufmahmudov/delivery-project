@@ -26,7 +26,7 @@ public interface EmployeeService {
 
     ResponseEntity<?> setIsActive(Integer id, Boolean active);
 
-    ResponseEntity<?> setRoles(Set<String> roles, Integer id);
+//    ResponseEntity<?> setRoles(Set<String> roles, Integer id);
 
     ResponseEntity<?> uploadImage(MultipartFile multipartFile);
 }

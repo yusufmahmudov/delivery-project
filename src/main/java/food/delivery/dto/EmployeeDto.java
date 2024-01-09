@@ -59,6 +59,15 @@ public class EmployeeDto {
     private String phoneNum2;
 
 
+    @Schema(description = "Xodim paroli",
+            accessMode = Schema.AccessMode.WRITE_ONLY)
+    @NotNull(message = AppMessages.EMPTY_FIELD)
+    @Size(min = 8, max = 20, message = "length min 8 and max 20")
+    @Pattern(regexp="^[a-zA-Z0-9]+$",
+            message="Faqat katta, kichik harflar va sonlardan iborat bo'lishi shart")
+    private String password;
+
+
     @Schema(description = "Xodimni yashash manzili ma'lumotlari",
             accessMode = Schema.AccessMode.READ_WRITE)
     @Size(max = 120, message = "length max 20")
@@ -74,10 +83,6 @@ public class EmployeeDto {
     @Schema(description = "Xodimning jinsi",
             accessMode = Schema.AccessMode.READ_WRITE)
     private String gender;
-
-
-    @Schema(description = "code")
-    private String code;
 
 
     @Schema(description = "Xodimning ish o'rni. ADMIN, COURIER",
@@ -105,10 +110,10 @@ public class EmployeeDto {
     private String passportNo;
 
 
-    @Schema(description = "Xodimning tug'ilgan sanasi",
+    @Schema(description = "Xodimning tug'ilgan sanasi. Yuborish tartibi: yyyy-mm-dd",
             accessMode = Schema.AccessMode.READ_WRITE,
-            example = "dd-MM-yyyy")
-    @JsonFormat(pattern="dd-MM-yyyy")
+            example = "yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd")
     private String birthDate;
 
 

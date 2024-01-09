@@ -67,7 +67,7 @@ public class InlineKeyboardMaker {
         WebAppInfo webAppInfo = new WebAppInfo();
         webAppInfo.setUrl("https://google.com");
 //        webAppInfo.setUrl("http://localhost:8080/api/auth/login?chatId=" + chatId);
-
+        // application.properties.....
         button.setWebApp(webAppInfo);
         list.add(button);
 

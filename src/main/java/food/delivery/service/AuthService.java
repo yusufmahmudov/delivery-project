@@ -18,11 +18,11 @@ public interface AuthService {
 
     ResponseEntity<?> roleForEmployee(EmployeeRole employeeRole);
 
-    ResponseEntity<?> createEmployeeAccount(EmployeeDto employeeDto);
+//    ResponseEntity<?> createEmployeeAccount(EmployeeDto employeeDto);
 
-    ResponseEntity<?> loginEmployeeCheckCode(EmployeeDto employeeDto);
+    ResponseEntity<?> loginEmployee(EmployeeDto employeeDto);
 
-    ResponseDto<JwtResponse> loginEmployee(LoginDto loginDto);
+    ResponseDto<JwtResponse> getTokenEmployee(LoginDto loginDto);
 
 
 

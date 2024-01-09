@@ -7,8 +7,6 @@ import food.delivery.dto.UserDto;
 import food.delivery.dto.template.UserDetailsDto;
 import food.delivery.dto.response.JwtResponse;
 import food.delivery.dto.response.ResponseDto;
-import food.delivery.helper.AppCode;
-import food.delivery.helper.AppMessages;
 import food.delivery.helper.StringHelper;
 import food.delivery.model.Employee;
 import food.delivery.model.Role;
@@ -59,47 +57,43 @@ public class AuthServiceImpl implements AuthService {
 
     public ResponseEntity<?> registerEmployee(EmployeeDto employeeDto) {
 
+        String phone = employeeDto.getPhoneNum1();
+        if (employeeRepository.existsByPhoneNum1(phone)) {
+            return ResponseEntity.internalServerError().body("Raqam allaqachon mavjud!");
+        }
+
         Employee employee = employeeMapper.toEntity(employeeDto);
         if (employee.getActive() == null) {
             employee.setActive(false);
         }
+        String salt = StringHelper.generateSalt(15);
+        Set<Role> roleSet = new HashSet<>();
+        Role newEmployee = roleRepository.findByName(SecurityUtil.NEW_EMPLOYEE)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roleSet.add(newEmployee);
 
-        Set<String> setRoles = employeeDto.getRole();
-        Set<Role> roles = new HashSet<>();
+        employee.setRoles(roleSet);
+        employee.setCreatedAt(LocalDateTime.now());
+        employee.setSalt(salt);
+        employee.setUsername("employee_"+employee.getPhoneNum1()+"_"+salt);
+        employee.setPassword(passwordEncoder.encode(salt + employee.getPassword()));
 
-        for (String s : setRoles) {
-            switch (s) {
-                case "admin" -> {
-                    Role adminRole = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(adminRole);
-                }
-                case "mod" -> {
-                    Role modRole = roleRepository.findByName(SecurityUtil.MODERATOR)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(modRole);
-                }
-                case "courier" -> {
-                    Role courierRole = roleRepository.findByName(SecurityUtil.ROLE_COURIER)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(courierRole);
-                }
-            }
-        }
-
-        employee.setRoles(roles);
         employeeRepository.save(employee);
+        employeeDto = employeeMapper.toDto(employee);
 
-        return ResponseEntity.ok().body(employee);
+        return ResponseEntity.ok().body(employeeDto);
     }
 
 
     @Override
     public ResponseEntity<?> roleForEmployee(EmployeeRole employeeRole) {
+
         Integer id = employeeRole.getEmployeeId();
         List<String> roles = employeeRole.getRoles();
         Employee employee = employeeRepository.findById(id).get();
         Set<Role> roleSet = new HashSet<>();
+        Map<Integer, List<String>> map = new HashMap<>();
+        List<String> list = new ArrayList<>();
 
         for (String s : roles) {
             switch (s) {
@@ -107,123 +101,55 @@ public class AuthServiceImpl implements AuthService {
                     Role adminRole = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roleSet.add(adminRole);
+                    list.add("admin");
                 }
                 case "mod" -> {
                     Role modRole = roleRepository.findByName(SecurityUtil.MODERATOR)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roleSet.add(modRole);
+                    list.add("mod");
                 }
-                case "courier" -> {
-                    Role courierRole = roleRepository.findByName(SecurityUtil.ROLE_COURIER)
+                case "employee" -> {
+                    Role courierRole = roleRepository.findByName(SecurityUtil.ROLE_EMPLOYEE)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roleSet.add(courierRole);
+                    list.add("employee");
                 }
             }
         }
-
-//        roles.forEach(role -> {
-//            switch (role) {
-//                case "admin" -> {
-//                    Role adminRole = roleRepository.findByName(SecurityUtil.ROLE_ADMIN)
-//                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//                    roleSet.add(adminRole);
-//                }
-//                case "mod" -> {
-//                    Role modRole = roleRepository.findByName(SecurityUtil.MODERATOR)
-//                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//                    roleSet.add(modRole);
-//                }
-//                case "courier" -> {
-//                    Role courierRole = roleRepository.findByName(SecurityUtil.ROLE_COURIER)
-//                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//                    roleSet.add(courierRole);
-//                }
-//                default -> {
-//                    Role userRole = roleRepository.findByName(SecurityUtil.ROLE_USER)
-//                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//                }
-//            }
-//        });
+        map.put(id, list);
 
         employee.setRoles(roleSet);
         employeeRepository.save(employee);
-        Map<String, String> map = new HashMap<>();
-        map.put("roles", "OK");
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);
     }
 
 
     @Override
-    public ResponseEntity<?> createEmployeeAccount(EmployeeDto employeeDto) {
+    public ResponseEntity<?> loginEmployee(EmployeeDto employeeDto) {
+
         String phone = employeeDto.getPhoneNum1();
-        boolean isValid = StringHelper.isValidPhoneNumber(phone);
-        if (!isValid) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid phone number");
+        Optional<Employee> optional = employeeRepository.findByPhoneNum1(phone);
+        if (optional.isEmpty()) {
+            return ResponseEntity.internalServerError().body("Not found");
         }
-
-        String code = generateCode();
-        String salt = StringHelper.generateSalt(15);
-
-        if (code.isEmpty()) { // TODO: send code
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error code sending");
-        }
-
-        Employee employee = new Employee();
-
-        if (employeeRepository.existsByPhoneNum1(phone)) {
-            employee = employeeRepository.findByPhoneNum1(phone).get();
-            employee.setToolWord(code);
-            employee.setPassword(passwordEncoder.encode(salt + code));
-            employee.setUsername("employee_" + salt + "_" + phone);
-            employee.setSalt(salt);
-        } else {
-            Set<Role> roles = new HashSet<>();
-            Role role = roleRepository.findByName("ROLE_EMPLOYEE").get();
-            roles.add(role);
-
-            employee.setPhoneNum1(phone);
-            employee.setToolWord(code);
-            employee.setRoles(roles);
-            employee.setSalt(salt);
-            employee.setUsername("employee_" + salt + "_" + phone);
-            employee.setPassword(passwordEncoder.encode(salt + code));
-        }
-        employeeRepository.save(employee);
-        Map<String, String> map = new HashMap<>();
-        map.put("code", code);
-
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);
-    }
-
-
-    @Override
-    public ResponseEntity<?> loginEmployeeCheckCode(EmployeeDto employeeDto) {
-        String phone = employeeDto.getPhoneNum1();
-        String code = employeeDto.getCode();
-        Employee employee = employeeRepository.findByPhoneNum1(phone).get();
-        String temp = employee.getToolWord();
+        Employee employee = optional.get();
         String salt = employee.getSalt();
 
-        if (!code.equals(temp)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid code");
-        }
-
         LoginDto loginDto = new LoginDto();
-        loginDto.setUsername(salt + "_" + phone);
-        loginDto.setPassword(salt + code);
-        JwtResponse response = loginEmployee(loginDto).getData();
-
-        employeeRepository.save(employee);
+        loginDto.setUsername("employee_" + phone + "_" + salt);
+        loginDto.setPassword(salt + employeeDto.getPassword());
+        JwtResponse response = getTokenEmployee(loginDto).getData();
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
 
     @Override
-    public ResponseDto<JwtResponse> loginEmployee(LoginDto loginDto) {
+    public ResponseDto<JwtResponse> getTokenEmployee(LoginDto loginDto) {
 
-        String username = "employee_" + loginDto.getUsername();
+        String username = loginDto.getUsername();
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, loginDto.getPassword()));
@@ -362,5 +288,47 @@ public class AuthServiceImpl implements AuthService {
         return String.valueOf(code);
     }
 
+
+//    @Override
+//    public ResponseEntity<?> createEmployeeAccount(EmployeeDto employeeDto) {
+//        String phone = employeeDto.getPhoneNum1();
+//        boolean isValid = StringHelper.isValidPhoneNumber(phone);
+//        if (!isValid) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid phone number");
+//        }
+//
+//        String code = generateCode();
+//        String salt = StringHelper.generateSalt(15);
+//
+//        if (code.isEmpty()) { // TODO: send code
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error code sending");
+//        }
+//
+//        Employee employee = new Employee();
+//
+//        if (employeeRepository.existsByPhoneNum1(phone)) {
+//            employee = employeeRepository.findByPhoneNum1(phone).get();
+////            employee.setToolWord(code);
+//            employee.setPassword(passwordEncoder.encode(salt + code));
+//            employee.setUsername("employee_" + salt + "_" + phone);
+//            employee.setSalt(salt);
+//        } else {
+//            Set<Role> roles = new HashSet<>();
+//            Role role = roleRepository.findByName("ROLE_EMPLOYEE").get();
+//            roles.add(role);
+//
+//            employee.setPhoneNum1(phone);
+////            employee.setToolWord(code);
+//            employee.setRoles(roles);
+//            employee.setSalt(salt);
+//            employee.setUsername("employee_" + salt + "_" + phone);
+//            employee.setPassword(passwordEncoder.encode(salt + code));
+//        }
+//        employeeRepository.save(employee);
+//        Map<String, String> map = new HashMap<>();
+//        map.put("code", code);
+//
+//        return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);
+//    }
 
 }

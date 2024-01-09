@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-09-13T19:07:16+0500",
+    date = "2024-01-03T22:34:36+0500",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 20.0.2 (Oracle Corporation)"
 )
 @Component
@@ -34,9 +34,10 @@ public class UserMapperImpl implements UserMapper {
         if ( userDto.getBirthDate() != null ) {
             user.birthDate( LocalDateTime.parse( userDto.getBirthDate() ) );
         }
-        user.toolWord( userDto.getToolWord() );
         user.phoneNum1( userDto.getPhoneNum1() );
         user.phoneNum2( userDto.getPhoneNum2() );
+        user.tgUsername( userDto.getTgUsername() );
+        user.tgId( userDto.getTgId() );
         user.languageCode( userDto.getLanguageCode() );
         user.isAdmin( userDto.getIsAdmin() );
 
@@ -56,13 +57,14 @@ public class UserMapperImpl implements UserMapper {
         }
         userDto.id( user.getId() );
         userDto.fullName( user.getFullName() );
-        userDto.toolWord( user.getToolWord() );
         userDto.phoneNum1( user.getPhoneNum1() );
         userDto.phoneNum2( user.getPhoneNum2() );
         userDto.gender( user.getGender() );
         if ( user.getBirthDate() != null ) {
             userDto.birthDate( DateTimeFormatter.ISO_LOCAL_DATE_TIME.format( user.getBirthDate() ) );
         }
+        userDto.tgUsername( user.getTgUsername() );
+        userDto.tgId( user.getTgId() );
         userDto.languageCode( user.getLanguageCode() );
         userDto.isAdmin( user.getIsAdmin() );
 

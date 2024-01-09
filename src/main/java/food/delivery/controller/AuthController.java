@@ -28,6 +28,14 @@ public class AuthController {
     private final ProductService productService;
 
 
+    @Operation(summary = "Register super admin")
+    @PostMapping("/super-admin")
+    public ResponseEntity<?> superAdmin(
+            @RequestBody @NotNull EmployeeDto employeeDto) {
+        return authService.superAdmin(employeeDto);
+    }
+
+
     @Operation(summary = "Register uchun api", tags = {"auth", "post"})
     @PostMapping("/register")
     public ResponseEntity<?> registerEmployee(

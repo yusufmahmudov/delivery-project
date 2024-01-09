@@ -55,6 +55,37 @@ public class AuthServiceImpl implements AuthService {
     private static final Random random = new Random();
 
 
+    @Override
+    public ResponseEntity<?> superAdmin(EmployeeDto employeeDto) {
+
+        String phone = employeeDto.getPhoneNum1();
+        if (employeeRepository.existsByPhoneNum1(phone)) {
+            return ResponseEntity.internalServerError().body("Raqam allaqachon mavjud!");
+        }
+
+        Employee employee = employeeMapper.toEntity(employeeDto);
+        if (employee.getActive() == null) {
+            employee.setActive(false);
+        }
+        String salt = StringHelper.generateSalt(15);
+        Set<Role> roleSet = new HashSet<>();
+        Role moderator = roleRepository.findByName(SecurityUtil.MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roleSet.add(moderator);
+
+        employee.setRoles(roleSet);
+        employee.setCreatedAt(LocalDateTime.now());
+        employee.setSalt(salt);
+        employee.setUsername("employee_"+employee.getPhoneNum1()+"_"+salt);
+        employee.setPassword(passwordEncoder.encode(salt + employee.getPassword()));
+
+        employeeRepository.save(employee);
+        employeeDto = employeeMapper.toDto(employee);
+
+        return ResponseEntity.ok().body(employeeDto);
+    }
+
+
     public ResponseEntity<?> registerEmployee(EmployeeDto employeeDto) {
 
         String phone = employeeDto.getPhoneNum1();

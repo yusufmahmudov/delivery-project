@@ -1,5 +1,6 @@
 package food.delivery.config;
 
+import food.delivery.dto.EmployeeDto;
 import food.delivery.model.Employee;
 import food.delivery.model.Role;
 import food.delivery.repository.RoleRepository;
@@ -55,11 +56,5 @@ public class Config {
         roleRepository.save(role5);
     }
 
-
-    @PostConstruct
-    public void createAdmin() {
-        Employee employee = new Employee();
-
-    }
 
 }

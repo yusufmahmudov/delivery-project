@@ -14,6 +14,8 @@ import java.util.Set;
 public interface AuthService {
 
 
+    ResponseEntity<?> superAdmin(EmployeeDto employeeDto);
+
     ResponseEntity<?> registerEmployee(EmployeeDto employeeDto);
 
     ResponseEntity<?> roleForEmployee(EmployeeRole employeeRole);

@@ -57,6 +57,11 @@ public class FilialDto {
     private Integer humanCapacity;
 
 
+    @Schema(description = "Filialning stollar soni")
+    @Min(value = 0)
+    private Integer tableCount;
+
+
     @Schema(description = "Filialga biirktirilgan telefon raqam", required = true,
             example = "+998-90-999-99-99")
     @NotNull(message = AppMessages.EMPTY_FIELD)

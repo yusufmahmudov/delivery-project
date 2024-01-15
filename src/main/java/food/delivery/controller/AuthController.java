@@ -2,7 +2,6 @@ package food.delivery.controller;
 
 import food.delivery.dto.EmployeeDto;
 import food.delivery.dto.EmployeeRole;
-import food.delivery.dto.ProductDto;
 import food.delivery.dto.UserDto;
 import food.delivery.service.AuthService;
 import food.delivery.service.ProductService;
@@ -14,8 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Set;
 
 @Tag(name = "auth", description = "Xodim va userlar uchun SIGN va LOGIN")
 @RestController

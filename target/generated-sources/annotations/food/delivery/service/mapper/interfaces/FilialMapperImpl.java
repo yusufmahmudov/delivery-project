@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-01-03T22:34:36+0500",
+    date = "2024-01-15T00:07:59+0500",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 20.0.2 (Oracle Corporation)"
 )
 @Component
@@ -28,10 +28,10 @@ public class FilialMapperImpl implements FilialMapper {
         FilialDtoBuilder filialDto = FilialDto.builder();
 
         if ( filial.getOpeningTime() != null ) {
-            filialDto.openingTime( DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ).format( filial.getOpeningTime() ) );
+            filialDto.openingTime( DateTimeFormatter.ofPattern( "yyyy.MM.dd HH:mm" ).format( filial.getOpeningTime() ) );
         }
         if ( filial.getClosingTime() != null ) {
-            filialDto.closingTime( DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ).format( filial.getClosingTime() ) );
+            filialDto.closingTime( DateTimeFormatter.ofPattern( "yyyy.MM.dd HH:mm" ).format( filial.getClosingTime() ) );
         }
         filialDto.id( filial.getId() );
         filialDto.name( filial.getName() );
@@ -40,6 +40,7 @@ public class FilialMapperImpl implements FilialMapper {
         filialDto.address( filial.getAddress() );
         filialDto.buildingSize( filial.getBuildingSize() );
         filialDto.humanCapacity( filial.getHumanCapacity() );
+        filialDto.tableCount( filial.getTableCount() );
         filialDto.phoneNum( filial.getPhoneNum() );
         filialDto.adminId( filial.getAdminId() );
         List<Integer> list = filial.getEmployees();
@@ -61,10 +62,10 @@ public class FilialMapperImpl implements FilialMapper {
         FilialBuilder filial = Filial.builder();
 
         if ( filialDto.getOpeningTime() != null ) {
-            filial.openingTime( LocalDateTime.parse( filialDto.getOpeningTime(), DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ) ) );
+            filial.openingTime( LocalDateTime.parse( filialDto.getOpeningTime(), DateTimeFormatter.ofPattern( "yyyy.MM.dd HH:mm" ) ) );
         }
         if ( filialDto.getClosingTime() != null ) {
-            filial.closingTime( LocalDateTime.parse( filialDto.getClosingTime(), DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ) ) );
+            filial.closingTime( LocalDateTime.parse( filialDto.getClosingTime(), DateTimeFormatter.ofPattern( "yyyy.MM.dd HH:mm" ) ) );
         }
         filial.id( filialDto.getId() );
         filial.name( filialDto.getName() );
@@ -73,6 +74,7 @@ public class FilialMapperImpl implements FilialMapper {
         filial.address( filialDto.getAddress() );
         filial.buildingSize( filialDto.getBuildingSize() );
         filial.humanCapacity( filialDto.getHumanCapacity() );
+        filial.tableCount( filialDto.getTableCount() );
         filial.phoneNum( filialDto.getPhoneNum() );
         filial.adminId( filialDto.getAdminId() );
         filial.imagePath( filialDto.getImagePath() );

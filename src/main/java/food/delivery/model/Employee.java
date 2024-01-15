@@ -2,6 +2,8 @@ package food.delivery.model;
 
 
 import javax.persistence.*;
+import javax.persistence.Table;
+
 import lombok.*;
 
 import java.time.LocalDate;

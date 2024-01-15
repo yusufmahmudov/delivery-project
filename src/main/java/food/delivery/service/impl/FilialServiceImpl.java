@@ -2,6 +2,7 @@ package food.delivery.service.impl;
 
 import food.delivery.dto.FilialDto;
 import food.delivery.dto.response.GetResponse;
+import food.delivery.dto.response.ResponseDto;
 import food.delivery.dto.response.ValidatorDto;
 import food.delivery.dto.template.ImageDto;
 import food.delivery.helper.AppMessages;
@@ -9,6 +10,7 @@ import food.delivery.model.Filial;
 import food.delivery.repository.FilialRepository;
 import food.delivery.service.FilialService;
 import food.delivery.service.ImageService;
+import food.delivery.service.TableService;
 import food.delivery.service.ValidatorService;
 import food.delivery.service.mapper.interfaces.FilialMapper;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ public class FilialServiceImpl implements FilialService {
     private final FilialMapper filialMapper;
     private final ValidatorService validatorService;
     private final ImageService imageService;
+    private final TableService tableService;
     @Value("${main.domain}")
     private String domain;
 
@@ -53,6 +56,12 @@ public class FilialServiceImpl implements FilialService {
 
             Filial filial = filialMapper.toEntity(filialDto);
             filialRepository.save(filial);
+            Integer id = filial.getId();
+            Integer count = filial.getTableCount();
+            ResponseDto<?> responseDto = tableService.addTable(id, count);
+            if (responseDto.getData() == null && count != null) {
+                return ResponseEntity.internalServerError().body("Stol saqlashda muammo");
+            }
 
             return ResponseEntity.ok().body(filial);
         }catch (DataAccessException | PersistenceException | IllegalArgumentException e){

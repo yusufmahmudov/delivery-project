@@ -11,7 +11,6 @@ C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delive
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\redis\model\UserToken.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\security\JwtFilter.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\component\ImageUtility.java
-C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\model\TelegramUser.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\mapper\interfaces\LocationMapper.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\ReportService.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\redis\model\ReadyOrder.java
@@ -22,9 +21,11 @@ C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delive
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\model\Order.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\repository\ImageRepository.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\CourierService.java
+C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\impl\TableServiceImpl.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\config\WebSocketConfig.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\mapper\interfaces\OrderedProductsMapper.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\model\Product.java
+C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\repository\TableRepository.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\impl\ImageServiceImpl.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\mapper\interfaces\EmployeeMapper.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\dto\OrderedProductDto.java
@@ -50,6 +51,7 @@ C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delive
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\impl\FilialServiceImpl.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\telegram\constants\ButtonNameEnum.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\helper\AppMessages.java
+C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\model\Table.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\security\JwtEntryPoint.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\security\SecurityUtil.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\dto\template\OrderReportDto.java
@@ -60,6 +62,7 @@ C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delive
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\controller\WebSocketController.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\redis\model\AcceptedOrder.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\redis\model\UserLocation.java
+C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\mapper\interfaces\TableMapper.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\telegram\constants\ButtonCallbackEnum.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\repository\FilialRepository.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\controller\CategoryController.java
@@ -68,6 +71,7 @@ C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delive
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\helper\StringHelper.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\model\User.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\LocationService.java
+C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\dto\TableDto.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\model\Location.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\repository\DeliveryPriceRepository.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\dto\OrderDto.java
@@ -80,7 +84,6 @@ C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delive
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\controller\LocationController.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\redis\repository\UserTokenRepository.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\model\OrderedProduct.java
-C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\repository\TelegramUserRepository.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\redis\model\CourierBasket.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\DeliveryPriceService.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\controller\ImageController.java
@@ -111,11 +114,14 @@ C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delive
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\telegram\config\BotConfig.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\dto\LocationDto.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\model\Filial.java
+C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\dto\EmployeeRole.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\impl\CourierServiceImpl.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\dto\CategoryDto.java
+C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\controller\TableController.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\controller\UserController.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\ValidatorService.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\redis\repository\ReadyOrderRepository.java
+C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\TableService.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\controller\AuthController.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\impl\LocationServiceImpl.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\mapper\interfaces\DeliveryPriceMapper.java
@@ -124,6 +130,7 @@ C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delive
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\OrderProductService.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\mapper\interfaces\UserMapper.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\controller\ApplicationExceptionHandler.java
+C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\dto\response\GetResponse.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\repository\ProductRepository.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\service\mapper\interfaces\OrderMapper.java
 C:\Users\Yusuf\AAAAA\javaprojects\MyProjects\delivery2\src\main\java\food\delivery\repository\LocationRepository.java

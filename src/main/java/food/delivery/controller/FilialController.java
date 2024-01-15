@@ -20,7 +20,7 @@ import java.util.SortedMap;
 @RequiredArgsConstructor
 @Tag(name = "filial", description = "Filial ma'lumotlari bilan ishlovchi apilar")
 @Validated
-@PreAuthorize("hasRole('ROLE_MODERATOR') or hasRole('ROLE_ADMIN')")
+//@PreAuthorize("hasRole('ROLE_MODERATOR') or hasRole('ROLE_ADMIN')")
 public class FilialController {
 
     private final FilialService filialService;

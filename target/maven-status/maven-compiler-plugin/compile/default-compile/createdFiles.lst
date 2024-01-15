@@ -10,6 +10,7 @@ food\delivery\repository\UserRepository.class
 food\delivery\service\ProductService.class
 food\delivery\dto\DeliveryPriceDto$DeliveryPriceDtoBuilder.class
 food\delivery\dto\CategoryDto$CategoryDtoBuilder.class
+food\delivery\service\mapper\interfaces\TableMapper.class
 food\delivery\service\mapper\interfaces\LocationMapperImpl.class
 food\delivery\dto\EmployeeDto.class
 food\delivery\dto\response\ResponseDto$ResponseDtoBuilder.class
@@ -29,14 +30,15 @@ food\delivery\redis\repository\NewOrderRepository.class
 food\delivery\telegram\config\BotConfig.class
 food\delivery\telegram\handler\CallbackQueryHandler.class
 food\delivery\redis\model\AcceptedOrder.class
-food\delivery\repository\TelegramUserRepository.class
 food\delivery\dto\template\ImageDto$ImageDtoBuilder.class
-food\delivery\model\TelegramUser.class
 food\delivery\model\DeliveryPrice$DeliveryPriceBuilder.class
+food\delivery\repository\TableRepository.class
 food\delivery\service\mapper\interfaces\UserMapper.class
+food\delivery\dto\response\GetResponse.class
 food\delivery\security\JwtUtil.class
 food\delivery\service\AuthService.class
 food\delivery\dto\response\JwtResponse$JwtResponseBuilder.class
+food\delivery\dto\EmployeeRole.class
 food\delivery\service\mapper\interfaces\OrderMapper.class
 food\delivery\dto\CategoryDto.class
 food\delivery\service\LocationService.class
@@ -50,13 +52,13 @@ food\delivery\dto\ProductDto.class
 food\delivery\service\mapper\interfaces\ImageMapperImpl.class
 food\delivery\dto\LoginDto$LoginDtoBuilder.class
 food\delivery\service\mapper\interfaces\FilialMapper.class
+food\delivery\service\mapper\interfaces\TableMapperImpl.class
 food\delivery\controller\AuthController.class
 food\delivery\service\mapper\interfaces\ProductMapperImpl.class
 food\delivery\telegram\keyboard\InlineKeyboardMaker.class
 food\delivery\redis\model\PendingOrder.class
 food\delivery\service\mapper\interfaces\EmployeeMapperImpl.class
 food\delivery\service\ValidatorService.class
-food\delivery\model\TelegramUser$TelegramUserBuilder.class
 food\delivery\model\Employee.class
 food\delivery\service\impl\ReportServiceImpl.class
 food\delivery\model\Location.class
@@ -75,6 +77,7 @@ food\delivery\service\CourierService.class
 food\delivery\controller\EmployeeController.class
 food\delivery\service\mapper\CategoryMapper.class
 food\delivery\telegram\constants\BotMessageEnum.class
+food\delivery\dto\EmployeeRole$EmployeeRoleBuilder.class
 food\delivery\service\impl\CategoryServiceImpl.class
 food\delivery\service\impl\FilialServiceImpl.class
 food\delivery\security\JwtFilter.class
@@ -84,6 +87,7 @@ food\delivery\service\EmployeeService.class
 food\delivery\dto\template\OrderReportDto$OrderReportDtoBuilder.class
 food\delivery\dto\ProductDto$ProductDtoBuilder.class
 food\delivery\service\impl\UserServiceImpl.class
+food\delivery\model\Table$TableBuilder.class
 food\delivery\repository\LocationRepository.class
 food\delivery\service\impl\CourierServiceImpl.class
 food\delivery\repository\OrderedProductsRepository.class
@@ -103,6 +107,7 @@ food\delivery\controller\ApplicationExceptionHandler.class
 food\delivery\security\SecurityUtil.class
 food\delivery\model\User.class
 food\delivery\dto\OrderedProductDto.class
+food\delivery\service\impl\TableServiceImpl.class
 food\delivery\redis\repository\UserLocationRepository.class
 food\delivery\helper\AppMessages.class
 food\delivery\service\mapper\interfaces\LocationMapper.class
@@ -111,6 +116,7 @@ food\delivery\model\Order$OrderBuilder.class
 food\delivery\controller\DeliveryPriceController.class
 food\delivery\redis\model\CourierBasket.class
 food\delivery\controller\LocationController.class
+food\delivery\model\Table.class
 food\delivery\redis\repository\AcceptedOrderRepository.class
 food\delivery\dto\UserDto.class
 food\delivery\model\Role.class
@@ -125,6 +131,7 @@ food\delivery\service\impl\EmployeeServiceImpl.class
 food\delivery\helper\AppCode.class
 food\delivery\security\JwtEntryPoint.class
 food\delivery\service\impl\ProductServiceImpl.class
+food\delivery\dto\TableDto$TableDtoBuilder.class
 food\delivery\redis\model\ReadyOrder.class
 food\delivery\dto\FilialDto$FilialDtoBuilder.class
 food\delivery\dto\response\ReportDto$ReportDtoBuilder.class
@@ -143,8 +150,11 @@ food\delivery\service\impl\ImageServiceImpl.class
 food\delivery\controller\ProductController.class
 food\delivery\redis\model\CanceledOrder.class
 food\delivery\redis\repository\PendingOrderRepository.class
+food\delivery\dto\response\GetResponse$GetResponseBuilder.class
 food\delivery\service\mapper\interfaces\OrderedProductsMapperImpl.class
 food\delivery\model\Product$ProductBuilder.class
+food\delivery\service\TableService.class
+food\delivery\controller\TableController.class
 food\delivery\service\OrderProductService.class
 food\delivery\dto\response\ValidatorDto.class
 food\delivery\service\mapper\interfaces\ImageMapper.class
@@ -167,6 +177,7 @@ food\delivery\telegram\constants\ButtonCallbackEnum.class
 food\delivery\component\ScheduledJob.class
 food\delivery\config\SecurityConfig.class
 food\delivery\repository\OrderRepository.class
+food\delivery\dto\TableDto.class
 food\delivery\repository\CategoryRepository.class
 food\delivery\dto\LocationDto.class
 food\delivery\dto\FilialDto.class

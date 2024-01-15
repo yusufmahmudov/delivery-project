@@ -1,6 +1,10 @@
 package food.delivery.model;
 
 import javax.persistence.*;
+import javax.persistence.Table;
+
+import food.delivery.dto.TableDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -38,6 +42,9 @@ public class Filial {
 
     @Column(name = "human_capacity")
     private Integer humanCapacity;
+
+    @Column(name = "table_count")
+    private Integer tableCount;
 
     @Column(name = "phone_num")
     private String phoneNum;

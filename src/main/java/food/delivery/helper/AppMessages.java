@@ -15,6 +15,7 @@ public class AppMessages {
 
     public static final String DELIVERY = "delivery";
     public static final String PICK_UP = "pick up";
+    public static final String BY_EMPLOYEE = "by employee"; // xodim buyurtmasi
     public static final String FORMALIZED = "formalized"; // rasmiylashtirilgan
     public static final String CANCELED = "canceled"; // bekor qilingan
     public static final String DELIVERED = "delivered"; // yetqazib berilgan

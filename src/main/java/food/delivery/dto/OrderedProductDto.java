@@ -50,6 +50,11 @@ public class OrderedProductDto {
     private Double discountPrice;
 
 
+    @Schema(description = "Mahsulotning chegirmasiz narxi",
+            accessMode = Schema.AccessMode.READ_ONLY)
+    private Double priceWithoutDiscount;
+
+
     @Schema(description = "Umumiy narx",
             accessMode = Schema.AccessMode.READ_ONLY)
     private Double totalPrice;

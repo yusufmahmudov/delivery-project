@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-01-15T00:07:58+0500",
+    date = "2024-01-28T23:55:37+0500",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 20.0.2 (Oracle Corporation)"
 )
 @Component
@@ -32,16 +32,20 @@ public class OrderMapperImpl implements OrderMapper {
         OrderBuilder order = Order.builder();
 
         if ( orderDto.getCreatedAt() != null ) {
-            order.createdAt( LocalDateTime.parse( orderDto.getCreatedAt(), DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ) ) );
+            order.createdAt( LocalDateTime.parse( orderDto.getCreatedAt(), DateTimeFormatter.ofPattern( "yyyy.MM.dd HH:mm" ) ) );
         }
         if ( orderDto.getOrderTime() != null ) {
-            order.orderTime( LocalDateTime.parse( orderDto.getOrderTime(), DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ) ) );
+            order.orderTime( LocalDateTime.parse( orderDto.getOrderTime(), DateTimeFormatter.ofPattern( "yyyy.MM.dd HH:mm" ) ) );
         }
         order.id( orderDto.getId() );
         order.userId( orderDto.getUserId() );
         order.courierId( orderDto.getCourierId() );
+        order.employeeId( orderDto.getEmployeeId() );
+        order.cashierId( orderDto.getCashierId() );
+        order.servicingPrice( orderDto.getServicingPrice() );
         order.filialId( orderDto.getFilialId() );
         order.orderNumber( orderDto.getOrderNumber() );
+        order.tableNumber( orderDto.getTableNumber() );
         order.paid( orderDto.getPaid() );
         order.paymentType( orderDto.getPaymentType() );
         order.orderType( orderDto.getOrderType() );
@@ -52,6 +56,9 @@ public class OrderMapperImpl implements OrderMapper {
         order.comment( orderDto.getComment() );
         order.notice( orderDto.getNotice() );
         order.status( orderDto.getStatus() );
+        if ( orderDto.getOrderCompletedTime() != null ) {
+            order.orderCompletedTime( LocalDateTime.parse( orderDto.getOrderCompletedTime() ) );
+        }
         order.orderProducts( orderedProductDtoListToOrderedProductList( orderDto.getOrderProducts() ) );
 
         return order.build();
@@ -66,26 +73,33 @@ public class OrderMapperImpl implements OrderMapper {
         OrderDtoBuilder orderDto = OrderDto.builder();
 
         if ( order.getCreatedAt() != null ) {
-            orderDto.createdAt( DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ).format( order.getCreatedAt() ) );
+            orderDto.createdAt( DateTimeFormatter.ofPattern( "yyyy.MM.dd HH:mm" ).format( order.getCreatedAt() ) );
         }
         if ( order.getOrderTime() != null ) {
-            orderDto.orderTime( DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" ).format( order.getOrderTime() ) );
+            orderDto.orderTime( DateTimeFormatter.ofPattern( "yyyy.MM.dd HH:mm" ).format( order.getOrderTime() ) );
         }
         orderDto.id( order.getId() );
         orderDto.userId( order.getUserId() );
+        orderDto.employeeId( order.getEmployeeId() );
+        orderDto.cashierId( order.getCashierId() );
         orderDto.courierId( order.getCourierId() );
         orderDto.filialId( order.getFilialId() );
         orderDto.orderNumber( order.getOrderNumber() );
+        orderDto.tableNumber( order.getTableNumber() );
         orderDto.paid( order.getPaid() );
         orderDto.paymentType( order.getPaymentType() );
         orderDto.orderType( order.getOrderType() );
         orderDto.locationId( order.getLocationId() );
         orderDto.deliveryPrice( order.getDeliveryPrice() );
         orderDto.totalPrice( order.getTotalPrice() );
+        orderDto.servicingPrice( order.getServicingPrice() );
         orderDto.quantity( order.getQuantity() );
         orderDto.comment( order.getComment() );
         orderDto.notice( order.getNotice() );
         orderDto.status( order.getStatus() );
+        if ( order.getOrderCompletedTime() != null ) {
+            orderDto.orderCompletedTime( DateTimeFormatter.ISO_LOCAL_DATE_TIME.format( order.getOrderCompletedTime() ) );
+        }
         orderDto.orderProducts( orderedProductListToOrderedProductDtoList( order.getOrderProducts() ) );
 
         return orderDto.build();
@@ -103,6 +117,7 @@ public class OrderMapperImpl implements OrderMapper {
         orderedProduct.price( orderedProductDto.getPrice() );
         orderedProduct.discount( orderedProductDto.getDiscount() );
         orderedProduct.discountPrice( orderedProductDto.getDiscountPrice() );
+        orderedProduct.priceWithoutDiscount( orderedProductDto.getPriceWithoutDiscount() );
         orderedProduct.totalPrice( orderedProductDto.getTotalPrice() );
         orderedProduct.amount( orderedProductDto.getAmount() );
 
@@ -134,6 +149,7 @@ public class OrderMapperImpl implements OrderMapper {
         orderedProductDto.price( orderedProduct.getPrice() );
         orderedProductDto.discount( orderedProduct.getDiscount() );
         orderedProductDto.discountPrice( orderedProduct.getDiscountPrice() );
+        orderedProductDto.priceWithoutDiscount( orderedProduct.getPriceWithoutDiscount() );
         orderedProductDto.totalPrice( orderedProduct.getTotalPrice() );
         orderedProductDto.amount( orderedProduct.getAmount() );
 

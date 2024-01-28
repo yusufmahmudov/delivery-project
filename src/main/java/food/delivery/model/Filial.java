@@ -46,6 +46,9 @@ public class Filial {
     @Column(name = "table_count")
     private Integer tableCount;
 
+    @Column(name = "servicing")
+    private Double servicing;
+
     @Column(name = "phone_num")
     private String phoneNum;
 

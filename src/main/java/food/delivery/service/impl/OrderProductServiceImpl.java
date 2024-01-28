@@ -1,5 +1,6 @@
 package food.delivery.service.impl;
 
+import food.delivery.dto.OrderDto;
 import food.delivery.dto.OrderedProductDto;
 import food.delivery.dto.response.ResponseDto;
 import food.delivery.model.OrderedProduct;
@@ -25,7 +26,8 @@ public class OrderProductServiceImpl implements OrderProductService {
 
     @Override
     public ResponseEntity<?> saveOrderProducts(
-            List<OrderedProductDto> orderedProducts, Long orderId) {
+            List<OrderedProductDto> orderedProducts, Long orderId
+    ) {
 
         Integer count = 0;
         List<OrderedProduct> list = orderedProducts.stream()
@@ -39,6 +41,44 @@ public class OrderProductServiceImpl implements OrderProductService {
         orderedProductsRepository.saveAll(list);
 
         return ResponseEntity.accepted().body(count);
+    }
+
+
+    @Override
+    public ResponseDto<OrderDto> saveOrderProductsByAllData(
+            List<OrderedProductDto> orderedProducts, OrderDto orderDto
+    ) {
+
+        Integer count = 0;
+        double price = 0.0;
+        double disPrice = 0.0;
+        double totalPrice = 0.0;
+        double allTotalPrice = 0.0;
+
+        for (OrderedProductDto o : orderedProducts) {
+            o.setOrderId(orderDto.getId());
+            count += o.getAmount();
+            price = o.getPrice() * o.getAmount();
+            o.setPriceWithoutDiscount(price);
+
+            disPrice = price / 100 * o.getDiscount();
+            o.setDiscountPrice(disPrice);
+
+            totalPrice = price - disPrice;
+            o.setTotalPrice(totalPrice);
+
+            allTotalPrice += totalPrice;
+        }
+        List<OrderedProduct> list = orderedProducts.stream()
+                .map(orderedProductsMapper::toEntity).toList();
+
+        orderDto.setTotalPrice(allTotalPrice);
+        orderDto.setQuantity(count);
+
+        orderedProductsRepository.saveAll(list);
+
+        return ResponseDto.<OrderDto>builder()
+                .data(orderDto).build();
     }
 
 

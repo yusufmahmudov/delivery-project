@@ -30,12 +30,30 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Admin Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Xodim Buyurtmani rasmiylashtiruvchi method",
             tags = {"order", "post"})
-    @PostMapping("/order-by-admin")
-    public ResponseEntity<?> orderByAdmin(
+    @PostMapping("/order-by-employee")
+    public ResponseEntity<?> orderByEmployee(
             @RequestBody OrderDto orderDto) {
-        return orderService.orderByAdmin(orderDto);
+        return orderService.orderByEmployee(orderDto);
+    }
+
+
+    @Operation(summary = "Buyurtmaga o'zgatirish kiritish. Faqat asitsant buyurtmalari uchun",
+            tags = {"order", "patch"})
+    @PatchMapping("/add-extra-to-the-order")
+    public ResponseEntity<?> addExtraToTheOrder(
+            @RequestBody OrderDto orderDto) {
+        return orderService.addExtraToTheOrder(orderDto);
+    }
+
+
+    @Operation(summary = "Kassir buyurtmani rasmiylashtirishi. Chek olish qismi",
+            tags = {"order", "post"})
+    @PostMapping("/order-by-cashier")
+    public ResponseEntity<?> orderByCashier(
+            @RequestBody OrderDto orderDto) {
+        return orderService.orderByCashier(orderDto);
     }
 
 

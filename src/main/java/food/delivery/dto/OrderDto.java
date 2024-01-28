@@ -25,6 +25,16 @@ public class OrderDto {
     private Long userId;
 
 
+    @Schema(description = "Buyurtma qilishchi xodim idsi. EmployeeDto classining 'id'si",
+            accessMode = Schema.AccessMode.READ_WRITE)
+    private Integer employeeId;
+
+
+    @Schema(description = "Buyurtma uchun to'lov oluvchi kassir idsi.",
+            accessMode = Schema.AccessMode.READ_WRITE)
+    private Integer cashierId;
+
+
     @Schema(description = "Buyurtmani yetqazib berivchi kuryer 'kuryerId'. EmployeeDto classining 'id'si",
             accessMode = Schema.AccessMode.READ_ONLY)
     private Integer courierId;
@@ -40,20 +50,25 @@ public class OrderDto {
     private String orderNumber;
 
 
+    @Schema(description = "Stol raqami",
+            accessMode = Schema.AccessMode.READ_WRITE)
+    private Integer tableNumber;
+
+
     @Schema(description = "Buyurtma to'lovi amalga oshgan bo'lsa true, aks holda false",
-            accessMode = Schema.AccessMode.READ_WRITE, required = true)
+            accessMode = Schema.AccessMode.READ_WRITE)
     @NotNull(message = AppMessages.EMPTY_FIELD)
     private Boolean paid;
 
 
     @Schema(description = "To'lov turi. Naqd, payme yoki boshqa to'lov turi",
-            accessMode = Schema.AccessMode.READ_WRITE, required = true)
+            accessMode = Schema.AccessMode.READ_WRITE)
     @NotNull(message = AppMessages.EMPTY_FIELD)
     private String paymentType;
 
 
-    @Schema(description = "Buyurtma turi. Olib ketish yoki yetqazib berish",
-            accessMode = Schema.AccessMode.READ_WRITE, required = true)
+    @Schema(description = "Buyurtma turi. Olib ketish, yetqazib berish, xodim buyurtma yaratish",
+            accessMode = Schema.AccessMode.READ_WRITE)
     @NotNull(message = AppMessages.EMPTY_FIELD)
     private String orderType;
 
@@ -64,17 +79,22 @@ public class OrderDto {
 
 
     @Schema(description = "Yetqazib berish uchun to'lov miqdori. DeliveryPrice classidan olinadi",
-            accessMode = Schema.AccessMode.READ_ONLY, required = true)
+            accessMode = Schema.AccessMode.READ_ONLY)
     @NotNull(message = AppMessages.EMPTY_FIELD)
     @DecimalMin(value = "0.0", message = "deliveryPrice value min = 0.0")
     private Double deliveryPrice;
 
 
     @Schema(description = "Buyurtma qilingan masulotlarni umumiy narxi",
-            accessMode = Schema.AccessMode.READ_ONLY, required = true)
+            accessMode = Schema.AccessMode.READ_ONLY)
     @NotNull(message = AppMessages.EMPTY_FIELD)
     @DecimalMin(value = "0.0", message = "totalPrice value min = 0.0")
     private Double totalPrice;
+
+
+    @Schema(description = "Obsuluga, Xodim xizmat ko'rsatishining naxri")
+    @DecimalMin(value = "0.0", message = "totalPrice value min = 0.0")
+    private Double servicingPrice;
 
 
     @Schema(description = "Buyurtma qilingan mahsulotlar umumiy soni",
@@ -100,14 +120,19 @@ public class OrderDto {
 
     @Schema(description = "Buyurtma rasmiylashtirish vaqti",
             accessMode = Schema.AccessMode.READ_WRITE)
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private String orderTime;
 
 
     @Schema(description = "Buyurtma qilingan vaqt",
             accessMode = Schema.AccessMode.READ_ONLY)
-    @JsonFormat(pattern="dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
     private String createdAt;
+
+
+    @Schema(description = "Buyurtma yopilgan vaqt")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private String orderCompletedTime;
 
 
     @Schema(description = "Buyurtma mahsulotlari ro'yxati",

@@ -2,7 +2,6 @@ package food.delivery.model;
 
 import javax.persistence.*;
 import javax.persistence.Table;
-
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -29,11 +28,23 @@ public class Order {
     @Column(name = "courier_id")
     private Integer courierId;
 
+    @Column(name = "employeeId")
+    private Integer employeeId;
+
+    @Column(name = "cashierId")
+    private Integer cashierId;
+
+    @Column(name = "servicingPriceId")
+    private Double servicingPrice;
+
     @Column(name = "filial_id")
     private Integer filialId;
 
     @Column(name = "order_number")
     private String orderNumber;
+
+    @Column(name = "table_number")
+    private Integer tableNumber;
 
     @Column(name = "paid")
     private Boolean paid;
@@ -70,6 +81,9 @@ public class Order {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "order_completed_time")
+    private LocalDateTime orderCompletedTime;
 
     @OneToMany(mappedBy = "orderId")
     @ToString.Exclude

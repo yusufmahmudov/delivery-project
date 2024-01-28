@@ -2,6 +2,7 @@ package food.delivery.service;
 
 
 import food.delivery.dto.*;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.http.ResponseEntity;
 
 
@@ -11,8 +12,16 @@ public interface OrderService {
     ResponseEntity<?> orderProcessing(OrderDto orderDto);
 
 
-    /** Admin tomonidan buyurtmani rasmiylashtirish */
-    ResponseEntity<?> orderByAdmin(OrderDto orderDto);
+    /** Xodim afitsant tomonidan buyurtmani rasmiylashtirish */
+    ResponseEntity<?> orderByEmployee(OrderDto orderDto);
+
+
+    /** Buyurtmaga biror narsa qo'shish */
+    ResponseEntity<?> addExtraToTheOrder(OrderDto orderDto);
+
+
+    /** Kassir tomonidan buyurtmani rasmiylashtirish */
+    ResponseEntity<?> orderByCashier(OrderDto orderDto);
 
 
     /** Userga eng yaqin filialni aniqlash */

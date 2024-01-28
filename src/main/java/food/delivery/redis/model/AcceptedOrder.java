@@ -18,4 +18,6 @@ public class AcceptedOrder {
     private Long orderId;
     private Integer filialId;
     private OrderDto orderDto;
+    private Integer tableNumber;
+
 }

@@ -8,12 +8,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
-    @Mapping(target = "createdAt", source = "createdAt", dateFormat = "dd.MM.yyyy HH:mm")
-    @Mapping(target = "orderTime", source = "orderTime", dateFormat = "dd.MM.yyyy HH:mm")
+    @Mapping(target = "createdAt", source = "createdAt", dateFormat = "yyyy.MM.dd HH:mm")
+    @Mapping(target = "orderTime", source = "orderTime", dateFormat = "yyyy.MM.dd HH:mm")
     Order toEntity(OrderDto orderDto);
 
-    @Mapping(target = "createdAt", source = "createdAt", dateFormat = "dd.MM.yyyy HH:mm")
-    @Mapping(target = "orderTime", source = "orderTime", dateFormat = "dd.MM.yyyy HH:mm")
+    @Mapping(target = "createdAt", source = "createdAt", dateFormat = "yyyy.MM.dd HH:mm")
+    @Mapping(target = "orderTime", source = "orderTime", dateFormat = "yyyy.MM.dd HH:mm")
     OrderDto toDto(Order order);
 
 }

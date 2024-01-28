@@ -5,8 +5,10 @@ import food.delivery.dto.*;
 import food.delivery.helper.AppMessages;
 import food.delivery.model.Location;
 import food.delivery.model.Order;
+import food.delivery.redis.model.AcceptedOrder;
 import food.delivery.redis.model.CanceledOrder;
 import food.delivery.redis.model.NewOrder;
+import food.delivery.redis.repository.AcceptedOrderRepository;
 import food.delivery.redis.repository.CanceledOrderRepository;
 import food.delivery.redis.repository.NewOrderRepository;
 import food.delivery.repository.LocationRepository;
@@ -41,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderProductService orderProductService;
 
     private final NewOrderRepository newOrderRepository;
+    private final AcceptedOrderRepository acceptedOrderRepository;
     private final CanceledOrderRepository canceledOrderRepository;
     private final WebSocketUtil webSocketUtil;
 
@@ -107,10 +110,134 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public ResponseEntity<?> orderByAdmin(OrderDto orderDto) {
+    public ResponseEntity<?> orderByEmployee(OrderDto orderDto) {
+        try {
+            Integer employeeId = SecurityUtil.getEmployeeDto().getId().intValue();
+            orderDto.setEmployeeId(employeeId);
+            // TODO: FILIAL ID???
+
+            String orderNumber = generateOrderNumber();
+            orderDto.setOrderNumber(orderNumber);
+            orderDto.setPaid(false);
+            orderDto.setStatus(AppMessages.FORMALIZED);
+            orderDto.setOrderType(AppMessages.BY_EMPLOYEE);
+
+            Order order = orderMapper.toEntity(orderDto);
+            order.setCreatedAt(LocalDateTime.now());
+            order.setOrderTime(LocalDateTime.now());
+            orderRepository.save(order);
+            orderDto.setId(order.getId());
+
+            orderProductService.saveOrderProducts(
+                    orderDto.getOrderProducts(), orderDto.getId());
+
+            AcceptedOrder acceptedOrder = new AcceptedOrder();
+            acceptedOrder.setOrderId(orderDto.getId());
+            acceptedOrder.setTableNumber(orderDto.getTableNumber());
+            acceptedOrder.setFilialId(orderDto.getFilialId());
+            acceptedOrder.setOrderDto(orderDto);
+
+            acceptedOrderRepository.save(acceptedOrder);
+
+            webSocketUtil.sendAcceptedOrder(acceptedOrder);
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    @Override
+    public ResponseEntity<?> addExtraToTheOrder(OrderDto orderDto) {
+        try {
+            Integer employeeId = SecurityUtil.getEmployeeDto().getId().intValue();
+            if (!employeeId.equals(orderDto.getEmployeeId())) {
+                return ResponseEntity.internalServerError().body("Bu sizning buyurtmangiz emas!");
+            }
+            orderProductService.saveOrderProducts(
+                    orderDto.getOrderProducts(), orderDto.getId());
+
+            AcceptedOrder acceptedOrder = acceptedOrderRepository.findById(orderDto.getId()).get();
+            acceptedOrder.setTableNumber(orderDto.getTableNumber());
+            acceptedOrder.setOrderDto(orderDto);
+
+            acceptedOrderRepository.save(acceptedOrder);
+
+            webSocketUtil.sendAcceptedOrder(acceptedOrder);
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    /*
+        private Long userId; X
+        private Integer courierId; X
+        private Integer employeeId; A
+        private Integer cashierId; A
+        private Double servicingPrice; A
+        private Integer filialId; A
+        private String orderNumber; A
+        private Integer tableNumber; A -1
+        private Boolean paid; A
+        private String paymentType; A
+        private String orderType; A
+        private Long locationId; X
+        private Double deliveryPrice; X
+        private Double totalPrice; A
+        private Integer quantity; X
+        private String comment; A
+        private String notice; X
+        private String status; A
+        private LocalDateTime orderTime; A
+        private LocalDateTime createdAt; X
+        private LocalDateTime orderCompletedTime; A
+        private List<OrderedProduct> orderProducts; A
+    */
+
+    @Override
+    public ResponseEntity<?> orderByCashier(OrderDto orderDto) {
+        try {
+            Integer employeeId = SecurityUtil.getEmployeeDto().getId().intValue();
+            orderDto.setEmployeeId(employeeId);
+            orderDto.setCashierId(employeeId);
+            // TODO: FILIAL ID???
+
+            String orderNumber = generateOrderNumber();
+            orderDto.setOrderNumber(orderNumber);
+            orderDto.setPaid(false);
+            orderDto.setStatus(AppMessages.FORMALIZED);
+            orderDto.setOrderType(AppMessages.BY_EMPLOYEE);
+            orderDto.setServicingPrice(0.0);
+
+            Order order = orderMapper.toEntity(orderDto);
+            order.setCreatedAt(LocalDateTime.now());
+            order.setOrderTime(LocalDateTime.now());
+            order.setOrderCompletedTime(LocalDateTime.now());
+            orderDto = orderMapper.toDto(order);
+            order = orderMapper.toEntity(orderDto);
+            orderRepository.save(order);
+            orderDto.setId(order.getId());
+
+            orderDto = orderProductService.saveOrderProductsByAllData(
+                    orderDto.getOrderProducts(), orderDto).getData();
+
+            AcceptedOrder acceptedOrder = new AcceptedOrder();
+            acceptedOrder.setOrderId(orderDto.getId());
+            acceptedOrder.setTableNumber(orderDto.getTableNumber());
+            acceptedOrder.setFilialId(orderDto.getFilialId());
+            acceptedOrder.setOrderDto(orderDto);
+
+            acceptedOrderRepository.save(acceptedOrder);
+
+            webSocketUtil.sendAcceptedOrder(acceptedOrder);
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderDto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 

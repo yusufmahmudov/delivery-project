@@ -8,10 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.List;
 
 
@@ -60,6 +57,12 @@ public class FilialDto {
     @Schema(description = "Filialning stollar soni")
     @Min(value = 0)
     private Integer tableCount;
+
+
+    @Schema(description = "Obsuluga belgilash foizda")
+    @DecimalMin(value = "0.0", message = "min value = 0.0")
+    @DecimalMax(value = "100.0", message = "max value = 100.0")
+    private Double servicing;
 
 
     @Schema(description = "Filialga biirktirilgan telefon raqam", required = true,

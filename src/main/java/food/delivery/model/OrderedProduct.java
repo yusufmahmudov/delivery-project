@@ -4,6 +4,7 @@ package food.delivery.model;
 import javax.persistence.*;
 import javax.persistence.Table;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @Entity
@@ -31,6 +32,9 @@ public class OrderedProduct {
 
     @Column(name = "discount_price")
     private Double discountPrice;
+
+    @Column(name = "price_without_discount")
+    private Double priceWithoutDiscount;
 
     @Column(name = "total_price")
     private Double totalPrice;

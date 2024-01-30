@@ -57,6 +57,14 @@ public class OrderController {
     }
 
 
+    @Operation(summary = "Buyurtmani yakunlash, Chek olish qismi, restoran uchun")
+    @PostMapping("/order-completion")
+    public ResponseEntity<?> orderCompletion(
+            @RequestBody OrderDto orderDto, Integer filialId) {
+        return orderService.orderCompletion(orderDto, filialId);
+    }
+
+
     @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
             tags = {"order", "get"})
     @PostMapping("/order-acceptance")

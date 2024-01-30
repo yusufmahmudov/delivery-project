@@ -24,6 +24,10 @@ public interface OrderService {
     ResponseEntity<?> orderByCashier(OrderDto orderDto);
 
 
+    /** Kassir buyurtmani yakunlashi */
+    ResponseEntity<?> orderCompletion(OrderDto orderDto, Integer filialId);
+
+
     /** Userga eng yaqin filialni aniqlash */
     ResponseEntity<?> locationDetermination(Long locationId);
 

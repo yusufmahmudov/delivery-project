@@ -3,14 +3,12 @@ package food.delivery.service.impl;
 import food.delivery.component.WebSocketUtil;
 import food.delivery.dto.*;
 import food.delivery.helper.AppMessages;
+import food.delivery.model.Filial;
 import food.delivery.model.Location;
 import food.delivery.model.Order;
-import food.delivery.redis.model.AcceptedOrder;
-import food.delivery.redis.model.CanceledOrder;
-import food.delivery.redis.model.NewOrder;
-import food.delivery.redis.repository.AcceptedOrderRepository;
-import food.delivery.redis.repository.CanceledOrderRepository;
-import food.delivery.redis.repository.NewOrderRepository;
+import food.delivery.redis.model.*;
+import food.delivery.redis.repository.*;
+import food.delivery.repository.FilialRepository;
 import food.delivery.repository.LocationRepository;
 import food.delivery.repository.OrderRepository;
 import food.delivery.security.SecurityUtil;
@@ -42,8 +40,11 @@ public class OrderServiceImpl implements OrderService {
     private final LocationRepository locationRepository;
     private final OrderProductService orderProductService;
 
+    private final FilialRepository filialRepository;
     private final NewOrderRepository newOrderRepository;
     private final AcceptedOrderRepository acceptedOrderRepository;
+    private final PendingOrderRepository pendingOrderRepository;
+    private final ReadyOrderRepository readyOrderRepository;
     private final CanceledOrderRepository canceledOrderRepository;
     private final WebSocketUtil webSocketUtil;
 
@@ -240,6 +241,35 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public ResponseEntity<?> orderCompletion(OrderDto orderDto, Integer filialId) {
+        try {
+            Integer employeeId = SecurityUtil.getEmployeeDto().getId().intValue();
+            orderDto.setEmployeeId(orderDto.getEmployeeId());
+            orderDto.setCashierId(employeeId);
+            // TODO: FILIAL ID???
+
+            Filial filial = filialRepository.findById(orderDto.getFilialId()).get();
+
+            orderDto.setStatus(AppMessages.COMPLETION);
+            orderDto.setOrderType(AppMessages.BY_EMPLOYEE);
+
+            orderDto = orderProductService.saveOrderProductsByAllData(
+                    orderDto.getOrderProducts(), orderDto).getData();
+            orderDto.setServicingPrice(orderDto.getTotalPrice()/filial.getServicing());
+
+            Order order = orderMapper.toEntity(orderDto);
+            order.setOrderCompletedTime(LocalDateTime.now());
+            orderDto = orderMapper.toDto(order);
+            order = orderMapper.toEntity(orderDto);
+            orderRepository.save(order);
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderDto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
 
     private String generateOrderNumber() {
         LocalTime currentTime = LocalTime.now();
@@ -319,7 +349,27 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<?> orderPending(OrderDto orderDto, Integer filialId) {
-        return null;
+        try {
+            orderDto.setStatus(AppMessages.PENDING);
+
+            Order order = orderMapper.toEntity(orderDto);
+            orderRepository.save(order);
+
+            PendingOrder pendingOrder = new PendingOrder();
+            pendingOrder.setOrderId(orderDto.getId());
+            pendingOrder.setTableNumber(orderDto.getTableNumber());
+            pendingOrder.setFilialId(orderDto.getFilialId());
+            pendingOrder.setOrderDto(orderDto);
+
+            // TODO avvalgi redis modeldan o'chirish
+            pendingOrderRepository.save(pendingOrder);
+
+            webSocketUtil.sendPendingOrder(pendingOrder);
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderDto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 
@@ -331,7 +381,26 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<?> orderReady(OrderDto orderDto, Integer filialId) {
-        return null;
+        try {
+            orderDto.setStatus(AppMessages.READY);
+
+            Order order = orderMapper.toEntity(orderDto);
+            orderRepository.save(order);
+
+            ReadyOrder readyOrder = new ReadyOrder();
+            readyOrder.setOrderId(orderDto.getId());
+            readyOrder.setTableNumber(orderDto.getTableNumber());
+            readyOrder.setFilialId(orderDto.getFilialId());
+            readyOrder.setOrderDto(orderDto);
+
+            readyOrderRepository.save(readyOrder);
+
+            webSocketUtil.sendReadyOrder(readyOrder);
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderDto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 

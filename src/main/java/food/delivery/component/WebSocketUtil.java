@@ -2,6 +2,8 @@ package food.delivery.component;
 
 import food.delivery.redis.model.AcceptedOrder;
 import food.delivery.redis.model.NewOrder;
+import food.delivery.redis.model.PendingOrder;
+import food.delivery.redis.model.ReadyOrder;
 import food.delivery.redis.repository.NewOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -33,7 +35,21 @@ public class WebSocketUtil {
 
     public void sendAcceptedOrder(AcceptedOrder acceptedOrder) {
         /* websocket orqali qabul qilingan buyurtmalarni yuborish */
-        messagingTemplate.convertAndSend("topic/accepted-order", acceptedOrder);
+        messagingTemplate.convertAndSend("/topic/accepted-order", acceptedOrder);
     }
+
+
+    public void sendPendingOrder(PendingOrder pendingOrder) {
+        /* websocket orqali tayyorlanayotgan buyurtmalarga qo'shish */
+        messagingTemplate.convertAndSend("/topic/pending-order", pendingOrder);
+    }
+
+
+    public void sendReadyOrder(ReadyOrder readyOrder) {
+        /* websocket orqali tayyor bo'lgan buyurtmalarga qo'shish */
+        messagingTemplate.convertAndSend("/topic/ready-order", readyOrder);
+    }
+
+
 
 }

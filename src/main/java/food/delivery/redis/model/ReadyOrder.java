@@ -19,4 +19,6 @@ public class ReadyOrder {
     private Integer filialId;
     private String status;
     private OrderDto orderDto;
+    private Integer tableNumber;
+
 }

@@ -20,6 +20,10 @@ public class AppMessages {
     public static final String CANCELED = "canceled"; // bekor qilingan
     public static final String DELIVERED = "delivered"; // yetqazib berilgan
     public static final String ACCEPTED = "accepted"; // qabul qilingan
+    public static final String PENDING = "pending"; // tayyorlanayotgan
+    public static final String READY = "ready"; // tayyor bo'lgan buyurtmalar
+    public static final String COMPLETION = "completion"; // yakunlangan buyurtmalar
+
 
 
 }

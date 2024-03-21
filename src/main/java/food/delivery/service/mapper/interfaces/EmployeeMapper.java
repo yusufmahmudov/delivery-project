@@ -13,6 +13,7 @@ public interface EmployeeMapper {
     @Mapping(target = "createdAt", source = "createdAt", dateFormat = "yyyy-MM-dd HH:mm")
     Employee toEntity(EmployeeDto employeeDto);
 
+    @Mapping(target = "password", ignore = true)
     @Mapping(target = "birthDate", source = "birthDate", dateFormat = "yyyy-MM-dd")
     @Mapping(target = "createdAt", source = "createdAt", dateFormat = "yyyy-MM-dd HH:mm")
     EmployeeDto toDto(Employee employee);

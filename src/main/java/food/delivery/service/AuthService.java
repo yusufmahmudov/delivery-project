@@ -16,6 +16,8 @@ public interface AuthService {
 
     ResponseEntity<?> superAdmin(EmployeeDto employeeDto);
 
+    ResponseEntity<?> checkPhoneNumber(String phone);
+
     ResponseEntity<?> registerEmployee(EmployeeDto employeeDto);
 
     ResponseEntity<?> roleForEmployee(EmployeeRole employeeRole);

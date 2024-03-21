@@ -33,6 +33,13 @@ public class AuthController {
     }
 
 
+    @Operation(summary = "Telefon raqamni tekshirish", tags = {"auth", "post"})
+    @PostMapping("/check-phone")
+    public ResponseEntity<?> checkPhoneNumber(
+            @RequestBody @NotNull String phone) {
+        return authService.checkPhoneNumber(phone);
+    }
+
     @Operation(summary = "Register uchun api", tags = {"auth", "post"})
     @PostMapping("/register")
     public ResponseEntity<?> registerEmployee(

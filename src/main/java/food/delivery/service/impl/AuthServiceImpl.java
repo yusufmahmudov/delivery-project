@@ -90,6 +90,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
+    @Override
+    public ResponseEntity<?> checkPhoneNumber(String phone) {
+
+        Map<String, String> map = new HashMap<>();
+
+        if (employeeRepository.existsByPhoneNum1(phone)) {
+            map.put("Active", "true");
+        } else {
+            map.put("Active", "false");
+        }
+
+        String code = generateCode();
+        map.put(phone, code);
+
+        return ResponseEntity.ok().body(map);
+    }
+
+
     public ResponseEntity<?> registerEmployee(EmployeeDto employeeDto) {
 
         String phone = employeeDto.getPhoneNum1();
@@ -319,7 +337,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     public String generateCode() {
-        Integer code = random.nextInt(100000, 999999);
+        Integer code = random.nextInt(10000, 99999);
         return String.valueOf(code);
     }
 

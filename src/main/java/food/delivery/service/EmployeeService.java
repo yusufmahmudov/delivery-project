@@ -24,6 +24,8 @@ public interface EmployeeService {
 
     ResponseEntity<?> update(EmployeeDto employeeDto);
 
+    ResponseEntity<?> updatePassword(String password);
+
     ResponseEntity<?> setIsActive(Integer id, Boolean active);
 
 //    ResponseEntity<?> setRoles(Set<String> roles, Integer id);

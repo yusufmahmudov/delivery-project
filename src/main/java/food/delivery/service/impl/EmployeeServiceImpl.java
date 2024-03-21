@@ -5,6 +5,7 @@ import food.delivery.dto.response.GetResponse;
 import food.delivery.dto.response.ValidatorDto;
 import food.delivery.dto.template.ImageDto;
 import food.delivery.helper.AppMessages;
+import food.delivery.helper.StringHelper;
 import food.delivery.model.Employee;
 import food.delivery.model.Role;
 import food.delivery.repository.EmployeeRepository;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +42,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeMapper employeeMapper;
 
     private final RoleRepository roleRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     private final ImageService imageService;
     @Value("${main.domain}")
@@ -233,6 +237,25 @@ public class EmployeeServiceImpl implements EmployeeService {
             return ResponseEntity.ok().body(employee);
         }catch (NullPointerException | IllegalArgumentException | DataAccessException | NoSuchElementException e) {
             log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+
+    @Override
+    public ResponseEntity<?> updatePassword(String password) {
+        try {
+            Integer id = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
+            Employee employee = employeeRepository.findById(id).get();
+            String salt = StringHelper.generateSalt(15);
+
+            String pass = passwordEncoder.encode(salt + employee.getPassword());
+
+            employee.setSalt(salt);
+            employee.setPassword(pass);
+
+            return ResponseEntity.ok().body(employeeMapper.toDto(employee));
+        } catch (RuntimeException e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

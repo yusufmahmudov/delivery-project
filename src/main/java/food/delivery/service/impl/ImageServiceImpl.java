@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,6 +45,7 @@ public class ImageServiceImpl implements ImageService {
 
 
     @Override
+    @PostConstruct
     public void init() {
         try {
             Files.createDirectories(root);

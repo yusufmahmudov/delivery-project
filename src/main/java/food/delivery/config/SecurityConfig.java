@@ -70,7 +70,7 @@ public class SecurityConfig {
                 .antMatchers("/filial/**").permitAll()
                 .antMatchers("/table/**").permitAll()
                 .antMatchers("/order/**").permitAll()
-//                .antMatchers("/category/**").permitAll()
+                .antMatchers("/images/**").permitAll()
 //                .antMatchers("/product/**").permitAll()
 //                .antMatchers("/location/**").permitAll()
 //                .antMatchers("/image/**").permitAll()

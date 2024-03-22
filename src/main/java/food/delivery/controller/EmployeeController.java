@@ -22,7 +22,7 @@ import java.util.Set;
 @Tag(name = "employee", description = "Xodimlar ma'lumotlarini boshqaruvchi apilar classi")
 @Validated
 @PreAuthorize("hasAnyAuthority('ROLE_COURIER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
-public class EmployeeController {
+public class EmployeeController  {
 
     private final EmployeeService employeeService;
     private final TelegramService telegramService;
@@ -82,6 +82,14 @@ public class EmployeeController {
     public ResponseEntity<?> update(
             @RequestBody EmployeeDto employeeDto) {
         return employeeService.update(employeeDto);
+    }
+
+
+    @Operation(summary = "Xodim password almashtirishi", tags = {"employee", "patch"})
+    @PatchMapping("/update-password")
+    public ResponseEntity<?> updatePassword(
+            @RequestParam String password) {
+        return employeeService.updatePassword(password);
     }
 
 

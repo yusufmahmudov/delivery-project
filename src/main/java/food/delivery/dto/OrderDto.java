@@ -80,14 +80,12 @@ public class OrderDto {
 
     @Schema(description = "Yetqazib berish uchun to'lov miqdori. DeliveryPrice classidan olinadi",
             accessMode = Schema.AccessMode.READ_ONLY)
-    @NotNull(message = AppMessages.EMPTY_FIELD)
     @DecimalMin(value = "0.0", message = "deliveryPrice value min = 0.0")
     private Double deliveryPrice;
 
 
     @Schema(description = "Buyurtma qilingan masulotlarni umumiy narxi",
             accessMode = Schema.AccessMode.READ_ONLY)
-    @NotNull(message = AppMessages.EMPTY_FIELD)
     @DecimalMin(value = "0.0", message = "totalPrice value min = 0.0")
     private Double totalPrice;
 
@@ -99,7 +97,6 @@ public class OrderDto {
 
     @Schema(description = "Buyurtma qilingan mahsulotlar umumiy soni",
             accessMode = Schema.AccessMode.READ_ONLY)
-    @NotNull(message = AppMessages.EMPTY_FIELD)
     private Integer quantity;
 
 

@@ -65,15 +65,16 @@ public class OrderServiceImpl implements OrderService {
                 if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
                 }
-                filial = (FilialDto) response.getBody();
-                assert filial != null;
+                Map<Double, FilialDto> map = (Map<Double, FilialDto>) response.getBody();
+                assert map != null;
+                filial = map.values().stream().findFirst().get();
                 orderDto.setFilialId(filial.getId());
             } else {
-//                filial = filialService.getById(orderDto.getFilialId()).getData();
+                filial = (FilialDto) filialService.getById(orderDto.getFilialId()).getBody();
             }
             String orderNumber = generateOrderNumber();
             orderDto.setOrderNumber(orderNumber);
-            orderDto.setPaid(false);
+//            orderDto.setPaid(false);
             orderDto.setStatus(AppMessages.FORMALIZED);
 
             Order order = orderMapper.toEntity(orderDto);

@@ -30,6 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -87,6 +88,18 @@ public class AuthServiceImpl implements AuthService {
         employeeDto = employeeMapper.toDto(employee);
 
         return ResponseEntity.ok().body(employeeDto);
+    }
+
+
+    @Override
+    public ResponseEntity<?> refreshTokenEmployee() {
+
+        Integer id = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
+        Employee employee = employeeRepository.getReferenceById(id);
+        EmployeeDto employeeDto = employeeMapper.toDto(employee);
+        employeeDto.setPassword(employee.getCode());
+
+        return ResponseEntity.ok().body(loginEmployee(employeeDto).getBody());
     }
 
 
@@ -384,4 +397,12 @@ public class AuthServiceImpl implements AuthService {
 //        return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);
 //    }
 
+
+    @PostConstruct
+    public void superAdmin() {
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setPhoneNum1("+998909345670");
+        employeeDto.setPassword("abu_1234");
+        superAdmin(employeeDto);
+    }
 }

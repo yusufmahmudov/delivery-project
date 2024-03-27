@@ -4,6 +4,7 @@ import food.delivery.dto.EmployeeDto;
 import food.delivery.model.Employee;
 import food.delivery.model.Role;
 import food.delivery.repository.RoleRepository;
+import food.delivery.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ public class Config {
 
     @Autowired
     private RoleRepository roleRepository;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -54,6 +56,7 @@ public class Config {
         role5.setName("NEW_EMPLOYEE");
         role5.setId(5);
         roleRepository.save(role5);
+
     }
 
 

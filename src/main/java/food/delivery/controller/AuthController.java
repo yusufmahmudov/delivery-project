@@ -2,7 +2,10 @@ package food.delivery.controller;
 
 import food.delivery.dto.EmployeeDto;
 import food.delivery.dto.EmployeeRole;
+import food.delivery.dto.LoginDto;
 import food.delivery.dto.UserDto;
+import food.delivery.dto.response.JwtResponse;
+import food.delivery.dto.response.ResponseDto;
 import food.delivery.service.AuthService;
 import food.delivery.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +33,13 @@ public class AuthController {
     public ResponseEntity<?> superAdmin(
             @RequestBody @NotNull EmployeeDto employeeDto) {
         return authService.superAdmin(employeeDto);
+    }
+
+
+    @Operation(summary = "Refresh token employee", tags = {"post", "get"})
+    @GetMapping("/refresh-token-employee")
+    public ResponseEntity<?> refreshTokenEmployee() {
+        return authService.refreshTokenEmployee();
     }
 
 
@@ -70,7 +80,7 @@ public class AuthController {
     @Operation(summary = "User uchun. Telefon raqam yuboriladi",
             tags = {"auth", "post"})
     @PostMapping("/sign/user")
-    public ResponseEntity<?> createAccount(
+    public ResponseEntity<?> createUserAccount(
             @RequestBody @NotNull UserDto userDto
     ) {
         return authService.createUserAccount(userDto);

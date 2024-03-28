@@ -7,8 +7,10 @@ import food.delivery.dto.template.ImageDto;
 import food.delivery.helper.AppMessages;
 import food.delivery.helper.StringHelper;
 import food.delivery.model.Employee;
+import food.delivery.model.EmployeeRoles;
 import food.delivery.model.Role;
 import food.delivery.repository.EmployeeRepository;
+import food.delivery.repository.EmployeeRolesRepository;
 import food.delivery.repository.RoleRepository;
 import food.delivery.security.SecurityUtil;
 import food.delivery.service.EmployeeService;
@@ -42,6 +44,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeMapper employeeMapper;
 
     private final RoleRepository roleRepository;
+
+    private final EmployeeRolesRepository employeeRolesRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -170,6 +174,17 @@ public class EmployeeServiceImpl implements EmployeeService {
                 return ResponseEntity.internalServerError().body(AppMessages.NOT_FOUND);
             }
             EmployeeDto employeeDto = employeeMapper.toDto(optional.get());
+            List<EmployeeRoles> employeeRoles = employeeRolesRepository
+                    .findByEmployeeId(id);
+            Set<String> r = new HashSet<>();
+
+            for (EmployeeRoles roles : employeeRoles) {
+                Integer roleId = roles.getRoleId();
+                Role role = roleRepository.findById(roleId).get();
+                r.add(role.getName());
+            }
+
+            employeeDto.setRole(r);
 
             return ResponseEntity.ok().body(employeeDto);
         }catch (DataAccessException | IllegalArgumentException e) {

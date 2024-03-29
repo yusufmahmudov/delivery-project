@@ -21,7 +21,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Tag(name = "employee", description = "Xodimlar ma'lumotlarini boshqaruvchi apilar classi")
 @Validated
-@PreAuthorize("hasAnyAuthority('ROLE_COURIER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
+@PreAuthorize("hasAnyAuthority('ROLE_EMPLOYEE', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
 public class EmployeeController  {
 
     private final EmployeeService employeeService;

@@ -83,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
         employee.setSalt(salt);
         employee.setUsername("employee_"+employee.getPhoneNum1()+"_"+salt);
         employee.setPassword(passwordEncoder.encode(salt + employee.getPassword()));
-        employee.setCode(employee.getPassword());
+        employee.setCode(employeeDto.getPassword());
 
         employeeRepository.save(employee);
         employeeDto = employeeMapper.toDto(employee);
@@ -96,7 +96,7 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<?> refreshTokenEmployee() {
 
         Integer id = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
-        Employee employee = employeeRepository.getReferenceById(id);
+        Employee employee = employeeRepository.findById(id).get();
         EmployeeDto employeeDto = employeeMapper.toDto(employee);
         employeeDto.setPassword(employee.getCode());
 
@@ -144,7 +144,7 @@ public class AuthServiceImpl implements AuthService {
         employee.setSalt(salt);
         employee.setUsername("employee_"+employee.getPhoneNum1()+"_"+salt);
         employee.setPassword(passwordEncoder.encode(salt + employee.getPassword()));
-        employee.setCode(employee.getPassword());
+        employee.setCode(employeeDto.getPassword());
 
         employeeRepository.save(employee);
         employeeDto = employeeMapper.toDto(employee);

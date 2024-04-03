@@ -46,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
     private final PendingOrderRepository pendingOrderRepository;
     private final ReadyOrderRepository readyOrderRepository;
     private final CanceledOrderRepository canceledOrderRepository;
+    private final CourierBasketRepository courierBasketRepository;
     private final WebSocketUtil webSocketUtil;
 
     @Value("${delivery.radius}")
@@ -99,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
 //            newOrder.setFilialId(filial.getId());
             newOrder.setOrderDto(orderDto);
 
-//            newOrderRepository.save(newOrder);
+            newOrderRepository.save(newOrder);
 
             webSocketUtil.sendNewOrder(newOrder);
 
@@ -331,8 +332,30 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
+    public ResponseEntity<?> getAllNewOrder(Integer filialId) {
+        try {
+            List<NewOrder> newOrders = newOrderRepository.findAllByFilialId(filialId)
+                    .stream().toList();
+
+            return ResponseEntity.ok().body(newOrders);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+
+    @Override
     public ResponseEntity<?> getAllOrderAcceptance(Integer filialId) {
-        return null;
+        try {
+            List<AcceptedOrder> acceptedOrders = acceptedOrderRepository.findAllByFilialId(filialId)
+                    .stream().toList();
+
+            return ResponseEntity.ok().body(acceptedOrders);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 
@@ -344,7 +367,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<?> getAllOrderCancellation(Integer filialId) {
-        return null;
+        try {
+            List<CanceledOrder> canceledOrders = canceledOrderRepository.findAllByFilialId(filialId)
+                    .stream().toList();
+
+            return ResponseEntity.ok().body(canceledOrders);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 
@@ -376,7 +407,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<?> getAllOrderPending(Integer filialId) {
-        return null;
+        try {
+            List<PendingOrder> pendingOrders = pendingOrderRepository.findAllByFilialId(filialId)
+                    .stream().toList();
+
+            return ResponseEntity.ok().body(pendingOrders);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 
@@ -407,25 +446,57 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<?> getAllOrderReady(Integer filialId, String orderType) {
-        return null;
+        try {
+            List<ReadyOrder> readyOrders = readyOrderRepository
+                    .findAllByFilialIdAndStatus(filialId, orderType)
+                    .stream().toList();
+
+            return ResponseEntity.ok().body(readyOrders);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 
     @Override
     public ResponseEntity<?> getAllOrderReady() {
-        return null;
+        try {
+            List<ReadyOrder> readyOrders = readyOrderRepository
+                    .findAllOrders();
+
+            return ResponseEntity.ok().body(readyOrders);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 
     @Override
     public ResponseEntity<?> addOrderCourierBasket(OrderDto orderDto) {
-        return null;
+        try {
+
+            return ResponseEntity.ok().body("not");
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 
     @Override
     public ResponseEntity<?> getAllOrderCourierBasket() {
-        return null;
+        try {
+            Integer id = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
+            List<CourierBasket> courierBaskets = courierBasketRepository.findAllByCourierId(id)
+                    .stream().toList();
+
+            return ResponseEntity.ok().body(courierBaskets);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 

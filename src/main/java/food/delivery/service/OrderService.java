@@ -35,6 +35,10 @@ public interface OrderService {
     ResponseEntity<?> orderAcceptance(OrderDto orderDto, Integer filialId);
 
 
+    /** Barcha yangi buyurtmalar */
+    ResponseEntity<?> getAllNewOrder(Integer filialId);
+
+
     /** Barcha qabul qilingan buyurtmalar */
     ResponseEntity<?> getAllOrderAcceptance(Integer filialId);
 
@@ -101,7 +105,7 @@ public interface OrderService {
     ResponseEntity<?> getOrder(Long orderId);
 
 
-    /** Barcha  */
+    /** Userning barcha buyurtmari ro'yxati */
     ResponseEntity<?> getAllOrderHistory();
 
 }

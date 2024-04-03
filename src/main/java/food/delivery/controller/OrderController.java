@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import food.delivery.dto.OrderDto;
@@ -16,12 +17,12 @@ import javax.validation.Valid;
 @RequestMapping("/order")
 @Tag(name = "order", description = "Buyurtma ma'lumotlari bilan ishlovchi apilar")
 @Validated
-public class OrderController {
+public class OrderController  {
 
     private final OrderService orderService;
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method, User buyurtma berishi",
             tags = {"order", "post"})
     @PostMapping("/order-processing")
     public ResponseEntity<?> orderProcessing(
@@ -65,7 +66,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Buyurtmani qabul qilinganlarga qo'shish",
             tags = {"order", "get"})
     @PostMapping("/order-acceptance")
     public ResponseEntity<?> orderAcceptance(
@@ -75,7 +76,16 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Barcha rasmiylashtirilgan buyurtmalar",
+    @Operation(summary = "Barcha yangi buyurtmalar",
+            tags = {"order", "get"})
+    @GetMapping("/get-all-new-orders")
+    public ResponseEntity<?> getAllNewOrder(
+            @RequestParam Integer filialId) {
+        return orderService.getAllNewOrder(filialId);
+    }
+
+
+    @Operation(summary = "Barcha qabul qilingan buyurtmalar",
             tags = {"order", "get"})
     @GetMapping("/get-all-order-acceptance")
     public ResponseEntity<?> getAllOrderAcceptance(
@@ -84,7 +94,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Buyurtmani bekor qilingan buyurtmalarga qo'shish",
             tags = {"order", "post"})
     @PostMapping("/order-cancellation")
     public ResponseEntity<?> orderCancellation(
@@ -103,7 +113,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Buyurtmani tayyorlanishni boshlagan buyurtmalarga qo'shish",
             tags = {"order", "post"})
     @PostMapping("/order-pending")
     public ResponseEntity<?> orderPending(
@@ -122,7 +132,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Buyurtmani tayyor bo'lgan buyurtmalarga qo'shish ",
             tags = {"order", "post"})
     @PostMapping("/order-ready")
     public ResponseEntity<?> orderReady(
@@ -132,7 +142,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Barcha tayyor bo'lgan buyurtmalar, order turi bo'yicha",
             tags = {"order", "get"})
     @GetMapping("/get-all-order-ready-by-filial")
     public ResponseEntity<?> getAllOrderReady(
@@ -142,7 +152,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Barcha tayyor bo'lgan buyurtmalar",
             tags = {"order", "get"})
     @GetMapping("/get-all-order-ready")
     public ResponseEntity<?> getAllOrderReady() {
@@ -150,7 +160,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Buyurtmani courierning savatchasiga qo'shish",
             tags = {"order", "get"})
     @PostMapping("/add-order-courier-basket")
     public ResponseEntity<?> addOrderCourierBasket(
@@ -159,7 +169,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Courierning savatchasidagi barcha buyurtmalar",
             tags = {"order", "get"})
     @GetMapping("/get-all-order-courier-basket")
     public ResponseEntity<?> getAllOrderCourierBasket() {
@@ -167,7 +177,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Buyurtmani yetqazib berilganlarga qo'shish",
             tags = {"order", "post"})
     @PostMapping("/order-delivered")
     public ResponseEntity<?> orderDelivered(
@@ -176,7 +186,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Buyurtmani olib ketilishi kerak buyurtmalarga qo'shish",
             tags = {"order", "post"})
     @PostMapping("/order-taken")
     public ResponseEntity<?> orderTaken(
@@ -185,7 +195,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Barcha buyurtmalar, status bo'yicha",
             tags = {"order", "get"})
     @GetMapping("/get-all-order")
     public ResponseEntity<?> getAllOrder(
@@ -194,7 +204,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Barcha bekor qilingan buyurtmalar, User uchun",
             tags = {"order", "get"})
     @GetMapping("/get-all-order-cancellation-by-user")
     public ResponseEntity<?> getAllOrderCancellationByUser() {
@@ -202,7 +212,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Barcha jarayonda bo'lgan buyurtmalar, User uchun",
             tags = {"order", "get"})
     @GetMapping("/get-all-order-process")
     public ResponseEntity<?> getAllOrderProcess() {
@@ -210,7 +220,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Order ma'lumotlari",
             tags = {"order", "get"})
     @GetMapping("/get-order")
     public ResponseEntity<?> getOrder(
@@ -219,7 +229,7 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Buyurtmani rasmiylashtiruvchi method",
+    @Operation(summary = "Userning barcha buyurtmari ro'yxati",
             tags = {"order", "get"})
     @GetMapping("/get-all-order-history")
     public ResponseEntity<?> getAllOrderHistory() {

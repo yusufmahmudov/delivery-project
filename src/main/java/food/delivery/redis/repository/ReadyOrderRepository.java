@@ -13,4 +13,6 @@ public interface ReadyOrderRepository extends CrudRepository<ReadyOrder, Long> {
 
     List<ReadyOrder> findAllByFilialIdAndStatus(Integer filialId, String status);
 
+    List<ReadyOrder> findAllOrders();
+
 }

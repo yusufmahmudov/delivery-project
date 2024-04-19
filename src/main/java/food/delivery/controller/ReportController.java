@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -24,6 +25,19 @@ public class ReportController {
 
     private final ReportService reportService;
 
+
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @Operation(summary = "Sana bo'yicha daromad",
+            tags = {"report", "get"})
+    @GetMapping("/income-by-date")
+    public ResponseEntity<?> incomeByDate(
+            @RequestParam LocalDateTime startTime,
+            @RequestParam LocalDateTime endTime
+    ) {
+        List<ReportDto> list = reportService.incomeByDate(startTime, endTime);
+        return ResponseEntity.ok().body(list);
+    }
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @Operation(summary = "Umumiy uch oylik daromad",
@@ -68,6 +82,19 @@ public class ReportController {
 
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @Operation(summary = "Sana bo'yicha Productlarning sotilish darajasi, soni",
+            tags = {"report", "get"})
+    @GetMapping("/best-selling-food-to-date")
+    public ResponseEntity<?> bestSellingFoodToDate(
+            @RequestParam LocalDateTime startTime,
+            @RequestParam LocalDateTime endTime
+    ) {
+        List<ReportDto> list = reportService.bestSellingFoodToDate(startTime, endTime);
+        return ResponseEntity.ok().body(list);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @Operation(summary = "So'nggi uch oyda Productlarning sotilish darajasi, soni",
             tags = {"report", "get"})
     @GetMapping("/three-months-best-selling-food")
@@ -107,6 +134,19 @@ public class ReportController {
     }
 
 
+
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @Operation(summary = "Sana bo'yicha Productlarning sotilish darajasi, soni. id bo'yicha 1ta filial",
+            tags = {"report", "get"})
+    @GetMapping("/best-selling-food-by-id-and-date")
+    public ResponseEntity<?> bestSellingFoodByIdAndDate(
+            @RequestParam LocalDateTime startTime,
+            @RequestParam LocalDateTime endTime,
+            @RequestParam Integer id) {
+        List<ReportDto> list = reportService.bestSellingFoodByIdAndDate(startTime, endTime, id);
+        return ResponseEntity.ok().body(list);
+    }
 
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
@@ -154,6 +194,19 @@ public class ReportController {
 
 
 
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @Operation(summary = "So'nggi uch oyda Kunning qaysi qismi sotuv qanday bo'lishini" +
+            " ko'rsatib beruvchi api. Barcha filiallar uchun",
+            tags = {"report", "get"})
+    @GetMapping("/best-selling-food-time-by-date")
+    public ResponseEntity<?> bestSellingFoodTimeByDate(
+            @RequestParam LocalDateTime startTime,
+            @RequestParam LocalDateTime endTime
+    ) {
+        List<ReportDto> list = reportService.bestSellingFoodTimeByDate(startTime, endTime);
+        return ResponseEntity.ok().body(list);
+    }
 
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
@@ -206,6 +259,21 @@ public class ReportController {
     @Operation(summary = "So'nggi uch oyda Kunning qaysi qismi sotuv qanday bo'lishini" +
             " ko'rsatib beruvchi api. id bo'yicha 1ta filial",
             tags = {"report", "get"})
+    @GetMapping("/best-selling-food-time-by-id-and-date")
+    public ResponseEntity<?> bestSellingFoodTimeByIdAndDate(
+            @RequestParam LocalDateTime startTime,
+            @RequestParam LocalDateTime endTime,
+            @RequestParam Integer id
+    ) {
+        List<ReportDto> list = reportService.bestSellingFoodTimeByIdAndDate(startTime, endTime, id);
+        return ResponseEntity.ok().body(list);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @Operation(summary = "So'nggi uch oyda Kunning qaysi qismi sotuv qanday bo'lishini" +
+            " ko'rsatib beruvchi api. id bo'yicha 1ta filial",
+            tags = {"report", "get"})
     @GetMapping("/three-months-best-selling-food-time-by-id")
     public ResponseEntity<?> threeMonthsBestSellingFoodTimeById(
             @RequestParam @Min(1) Integer id) {
@@ -251,6 +319,18 @@ public class ReportController {
 
 
 
+
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @Operation(summary = "Sana bo'yicha yangi qo'shilgan foydalanuvchilar soni",
+            tags = {"report", "get"})
+    @GetMapping("/count-new-users-by-date")
+    public ResponseEntity<?> countOfNewUserByDate(
+            @RequestParam LocalDateTime startTime,
+            @RequestParam LocalDateTime endTime
+    ) {
+        Long count = reportService.countOfNewUserByDate(startTime, endTime);
+        return ResponseEntity.ok().body(count);
+    }
 
 
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
@@ -303,6 +383,18 @@ public class ReportController {
 
 
 
+
+    @PreAuthorize("hasRole('ROLE_COURIER')")
+    @Operation(summary = "Courierning sana bo'yicha daromadi",
+            tags = {"report", "get"})
+    @GetMapping("/courier-income-by-date")
+    public ResponseEntity<?> courierIncomeByDate(
+            @RequestParam LocalDateTime startTime,
+            @RequestParam LocalDateTime endTime
+    ) {
+        List<ReportDto> list = reportService.courierIncomeByDate(startTime, endTime);
+        return ResponseEntity.ok().body(list);
+    }
 
 
     @PreAuthorize("hasRole('ROLE_COURIER')")

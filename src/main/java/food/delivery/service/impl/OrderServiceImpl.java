@@ -327,7 +327,31 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<?> orderAcceptance(OrderDto orderDto, Integer filialId) {
-        return null;
+        try {
+            Integer employeeId = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
+            orderDto.setEmployeeId(orderDto.getEmployeeId());
+            orderDto.setCashierId(employeeId);
+            orderDto.setStatus(AppMessages.ACCEPTED);
+
+            Order order = orderRepository.findById(orderDto.getId()).get();
+            order = orderMapper.toEntity(orderDto);
+            orderRepository.save(order);
+
+            AcceptedOrder acceptedOrder = new AcceptedOrder();
+            acceptedOrder.setOrderId(orderDto.getId());
+            acceptedOrder.setFilialId(filialId);
+            acceptedOrder.setTableNumber(orderDto.getTableNumber());
+            acceptedOrder.setOrderDto(orderDto);
+
+            acceptedOrderRepository.save(acceptedOrder);
+
+            webSocketUtil.sendAcceptedOrder(acceptedOrder);
+
+            return ResponseEntity.ok().body(acceptedOrder);
+        } catch (RuntimeException e ) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 
@@ -361,8 +385,32 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<?> orderCancellation(OrderDto orderDto, Integer filialId) {
-        return null;
+        try {
+            Integer employeeId = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
+            orderDto.setEmployeeId(orderDto.getEmployeeId());
+            orderDto.setCashierId(employeeId);
+            orderDto.setStatus(AppMessages.ACCEPTED);
+
+            Order order = orderRepository.findById(orderDto.getId()).get();
+            order = orderMapper.toEntity(orderDto);
+            orderRepository.save(order);
+
+            CanceledOrder canceledOrder = new CanceledOrder();
+            canceledOrder.setOrderId(orderDto.getId());
+            canceledOrder.setFilialId(filialId);
+            canceledOrder.setOrderDto(orderDto);
+
+            canceledOrderRepository.save(canceledOrder);
+
+//            webSocketUtil.sendReadyOrder(canceledOrder); // todo : websocket
+
+            return ResponseEntity.ok().body(canceledOrder);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
+
 
 
     @Override
@@ -502,7 +550,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<?> orderDelivered(OrderDto orderDto) {
-        return null;
+        try {
+            Integer employeeId = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
+            orderDto.setStatus(AppMessages.DELIVERED);
+
+            Order order = orderRepository.findById(orderDto.getId()).get();
+            order = orderMapper.toEntity(orderDto);
+            orderRepository.save(order);
+
+            return ResponseEntity.ok().body(AppMessages.DELIVERED);
+        } catch (RuntimeException e ) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
 

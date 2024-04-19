@@ -3,10 +3,16 @@ package food.delivery.service;
 
 import food.delivery.dto.response.ReportDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReportService {
+
+
+    /** Barcha filiallarning umumiy daromadlari. Sana bo'yicha */
+    List<ReportDto> incomeByDate(LocalDateTime startTime, LocalDateTime endTime);
 
 
     /** Barcha filiallarning umumiy so'ngi uch oydagi daromadlari */
@@ -27,6 +33,9 @@ public interface ReportService {
 
 
 
+    /** Sana bo'yicha Productlarning sotilish darajasi, soni */
+    List<ReportDto> bestSellingFoodToDate(LocalDateTime startTime, LocalDateTime endTime);
+
 
     /** So'nggi uch oyda Productlarning sotilish darajasi, soni */
     List<ReportDto> threeMonthsBestSellingFood();
@@ -46,6 +55,9 @@ public interface ReportService {
 
 
 
+    /** Sana bo'yicha Productlarning sotilish darajasi, soni. id bo'yicha 1ta filial */
+    List<ReportDto> bestSellingFoodByIdAndDate(LocalDateTime startTime, LocalDateTime endTime, Integer id);
+
 
     /** So'nggi uch oyda Productlarning sotilish darajasi, soni. id bo'yicha 1ta filial */
     List<ReportDto> threeMonthsBestSellingFoodById(Integer id);
@@ -64,6 +76,10 @@ public interface ReportService {
 
 
 
+
+    /** Sana bo'yicha Kunning qaysi qismi sotuv qanday bo'lishi ko'rsatib beruvchi method.
+     *  Barcha filiallar uchun */
+    List<ReportDto> bestSellingFoodTimeByDate(LocalDateTime startTime, LocalDateTime endTime);
 
 
     /** So'nggi uch oyda Kunning qaysi qismi sotuv qanday bo'lishi ko'rsatib beruvchi method.
@@ -88,6 +104,10 @@ public interface ReportService {
 
 
 
+    /** Sana bo'yicha Kunning qaysi qismi sotuv qanday bo'lishi ko'rsatib beruvchi method.
+     *  id bo'yicha 1ta filial */
+    List<ReportDto> bestSellingFoodTimeByIdAndDate(LocalDateTime startTime, LocalDateTime endTime, Integer id);
+
 
     /** So'nggi uch oyda Kunning qaysi qismi sotuv qanday bo'lishi ko'rsatib beruvchi method.
      *  id bo'yicha 1ta filial */
@@ -110,6 +130,9 @@ public interface ReportService {
 
 
 
+
+    /** Sana bo'yicha yangi qo'shilgan foydalanuvchilar soni */
+    Long countOfNewUserByDate(LocalDateTime startTime, LocalDateTime endTime);
 
 
     /** So'nggi bir haftada qo'shilgan foydalanuvchilar soni */
@@ -135,6 +158,10 @@ public interface ReportService {
 
 
 
+    /** Courierning sana bo'yicha daromadini qaytaruvchi method */
+    List<ReportDto> courierIncomeByDate(LocalDateTime startTime, LocalDateTime endTime);
+
+
     /** Courierning so'ngi uch oylik daromadini qaytaruvchi method */
     List<ReportDto> threeMonthsIncomeOfTheCourier();
 
@@ -145,8 +172,6 @@ public interface ReportService {
 
     /** Courierning so'ngi bir haftalik daromadini qaytaruvchi method */
     List<ReportDto> weeklyIncomeOfTheCourier();
-
-
 
 
 

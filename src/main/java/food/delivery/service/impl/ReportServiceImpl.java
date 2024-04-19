@@ -84,6 +84,12 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
+    public List<ReportDto> incomeByDate(LocalDateTime startTime, LocalDateTime endTime) {
+        return calculateIncome(startTime, endTime);
+    }
+
+
+    @Override
     public List<ReportDto> threeMonthsOfIncome() {
         LocalDateTime endTime = LocalDateTime.now();
         LocalDateTime startTime = endTime.minusMonths(3);
@@ -119,7 +125,10 @@ public class ReportServiceImpl implements ReportService {
     }
 
 
-
+    @Override
+    public List<ReportDto> bestSellingFoodToDate(LocalDateTime startTime, LocalDateTime endTime) {
+        return calculateIncome(startTime, endTime);
+    }
 
 
     @Override
@@ -130,6 +139,7 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
+
     @Override
     public List<ReportDto> monthlyBestSellingFood() {
         LocalDateTime endTime = LocalDateTime.now();
@@ -138,6 +148,7 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
+
     @Override
     public List<ReportDto> weeklyBestSellingFood() {
         LocalDateTime endTime = LocalDateTime.now();
@@ -145,6 +156,7 @@ public class ReportServiceImpl implements ReportService {
 
         return calculateIncome(startTime, endTime);
     }
+
 
     @Override
     public List<ReportDto> dailyBestSellingFood() {
@@ -155,7 +167,10 @@ public class ReportServiceImpl implements ReportService {
     }
 
 
-
+    @Override
+    public List<ReportDto> bestSellingFoodByIdAndDate(LocalDateTime startTime, LocalDateTime endTime, Integer id) {
+        return calculateIncome(startTime, endTime);
+    }
 
 
     @Override
@@ -166,6 +181,7 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
+
     @Override
     public List<ReportDto> monthlyBestSellingFoodById(Integer id) {
         LocalDateTime endTime = LocalDateTime.now();
@@ -173,6 +189,7 @@ public class ReportServiceImpl implements ReportService {
 
         return calculateIncome(startTime, endTime);
     }
+
 
     @Override
     public List<ReportDto> weeklyBestSellingFoodById(Integer id) {
@@ -182,6 +199,7 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
+
     @Override
     public List<ReportDto> dailyBestSellingFoodById(Integer id) {
         LocalDateTime endTime = LocalDateTime.now();
@@ -190,8 +208,10 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
-
-
+    @Override
+    public List<ReportDto> bestSellingFoodTimeByDate(LocalDateTime startTime, LocalDateTime endTime) {
+        return calculateIncome(startTime, endTime);
+    }
 
 
     @Override
@@ -202,6 +222,7 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
+
     @Override
     public List<ReportDto> monthlyBestSellingFoodTime() {
         LocalDateTime endTime = LocalDateTime.now();
@@ -209,6 +230,7 @@ public class ReportServiceImpl implements ReportService {
 
         return calculateIncome(startTime, endTime);
     }
+
 
     @Override
     public List<ReportDto> weeklyBestSellingFoodTime() {
@@ -218,6 +240,7 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
+
     @Override
     public List<ReportDto> dailyBestSellingFoodTime() {
         LocalDateTime endTime = LocalDateTime.now();
@@ -226,8 +249,10 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
-
-
+    @Override
+    public List<ReportDto> bestSellingFoodTimeByIdAndDate(LocalDateTime startTime, LocalDateTime endTime, Integer id) {
+        return calculateIncome(startTime, endTime);
+    }
 
 
     @Override
@@ -238,6 +263,7 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
+
     @Override
     public List<ReportDto> monthlyBestSellingFoodTimeById(Integer id) {
         LocalDateTime endTime = LocalDateTime.now();
@@ -246,6 +272,7 @@ public class ReportServiceImpl implements ReportService {
         return calculateIncome(startTime, endTime);
     }
 
+
     @Override
     public List<ReportDto> weeklyBestSellingFoodTimeById(Integer id) {
         LocalDateTime endTime = LocalDateTime.now();
@@ -253,6 +280,7 @@ public class ReportServiceImpl implements ReportService {
 
         return calculateIncome(startTime, endTime);
     }
+
 
     @Override
     public List<ReportDto> dailyBestSellingFoodTimeById(Integer id) {
@@ -263,7 +291,10 @@ public class ReportServiceImpl implements ReportService {
     }
 
 
-
+    @Override
+    public Long countOfNewUserByDate(LocalDateTime startTime, LocalDateTime endTime) {
+        return userRepository.countByCreatedAtBetween(startTime, endTime);
+    }
 
 
     @Override
@@ -303,7 +334,25 @@ public class ReportServiceImpl implements ReportService {
     }
 
 
+    @Override
+    public List<ReportDto> courierIncomeByDate(LocalDateTime startTime, LocalDateTime endTime) {
+        // TODO : sananing kunlari bo'yicha bo'lib tashlash. for orqali
+        Integer id = Math.toIntExact(SecurityUtil.getEmployeeDto().getId());
 
+        List<OrderDto> orders = orderRepository
+                .findByCourierIdAndCreatedAtBetween(id, startTime, endTime)
+                .stream().map(orderMapper::toDto).toList();
+
+        List<ReportDto> reports = new ArrayList<>();
+        for (int i = 2; i >= 0; i--) {
+            endTime = LocalDateTime.now().minusMonths(i);
+            startTime = endTime.minusMonths(1);
+            ReportDto report = calculateCourierInfo(orders, startTime, endTime);
+            reports.add(report);
+        }
+
+        return reports;
+    }
 
 
     @Override

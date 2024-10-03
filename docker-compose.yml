@@ -6,9 +6,13 @@ services:
       - "8080:8080"
     environment:
       # Database
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/food_delivery
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/fooddelivery
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 123
+
+      # Redis Configuration
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
       
       # Application settings
       SPRING_SECURITY_EXPIRATION_MS: 31622400000
@@ -20,23 +24,31 @@ services:
       ORDER_DELETE_CRON: "0 0 2 * * ?"
 
       # Domain
-      MAIN_DOMAIN: http://13.60.246.24:8080/api
+      MAIN_DOMAIN: http://127.0.0.1:8080/api
 
     depends_on:
       - db
+      - redis
     volumes:
       - ./images:/images  # Map local images directory to the container
 
   db:
     image: postgres:13
     environment:
-      POSTGRES_DB: food_delivery
+      POSTGRES_DB: fooddelivery
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+  redis:
+    image: redis:6
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
 
 volumes:
   pgdata:
+  redisdata:

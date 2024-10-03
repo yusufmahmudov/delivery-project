@@ -1,27 +1,26 @@
-# Start with the official Maven image to build the application
+# Use Maven official image to build the application
 FROM maven:3.8.5-openjdk-17 AS build
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the pom.xml and the source code to the working directory
+# Copy pom.xml and download project dependencies
 COPY pom.xml .
-COPY src ./src
+RUN mvn dependency:go-offline -B
 
-# Package the application (skip tests if needed)
-RUN mvn clean package -DskipTests
+# Copy the entire project
+COPY . .
 
-# Start with the OpenJDK 17 image to run the application
-FROM openjdk:17-jdk-slim
+# Build the project
+RUN mvn clean package
 
-# Set the working directory
+# Use OpenJDK 17 to run the app
+FROM openjdk:17-jdk-alpine
+
 WORKDIR /app
 
-# Copy the packaged jar file from the build stage
-COPY --from=build /app/target/your-app-name.jar /app/app.jar
+COPY --from=build /app/target/*.jar app.jar
 
-# Expose the port your application runs on (optional)
+# Expose the port on which the application will run
 EXPOSE 8080
 
-# Run the application
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

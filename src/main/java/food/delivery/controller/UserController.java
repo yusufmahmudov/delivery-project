@@ -36,10 +36,10 @@ public class UserController {
 
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_MODERATOR')")
-    @Operation(summary = "'id' bo'yicha 1ta user ma'lumotlarni chiqarish", tags = {"user", "get"})
-    @GetMapping("/by-id")
-    public ResponseEntity<?> getById() {
-        return userService.getById();
+    @Operation(summary = "Token bo'yicha 1ta user ma'lumotlarni chiqarish", tags = {"user", "get"})
+    @GetMapping("/get-me")
+    public ResponseEntity<?> getMe() {
+        return userService.getMe();
     }
 
 

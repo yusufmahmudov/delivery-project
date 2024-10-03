@@ -4,7 +4,9 @@ import food.delivery.dto.*;
 import food.delivery.dto.response.GetResponse;
 import food.delivery.dto.response.ValidatorDto;
 import food.delivery.helper.AppMessages;
+import food.delivery.model.Role;
 import food.delivery.model.User;
+import food.delivery.repository.RoleRepository;
 import food.delivery.repository.UserRepository;
 import food.delivery.security.SecurityUtil;
 import food.delivery.service.ImageService;
@@ -31,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     private final ValidatorService validatorService;
+
+    private final RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -79,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<?> getById() {
+    public ResponseEntity<?> getMe() {
         try {
             Long id = SecurityUtil.getUserDto().getId();
             Optional<User> optional = userRepository.findById(id);
@@ -87,6 +91,10 @@ public class UserServiceImpl implements UserService {
                 return ResponseEntity.internalServerError().body(AppMessages.NOT_FOUND);
             }
             UserDto userDto = userMapper.toDto(optional.get());
+            Role role = roleRepository.findById(1).get();
+            Set<String> r = new HashSet<>();
+            r.add(role.getName());
+            userDto.setRole(r);
 //            userDto.setUsername(userDto.getUsername().substring(5));
 
             return ResponseEntity.ok().body(userDto);
@@ -95,7 +103,22 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+/*
 
+            List<EmployeeRoles> employeeRoles = employeeRolesRepository
+                    .findByEmployeeId(id);
+            Set<String> r = new HashSet<>();
+
+            for (EmployeeRoles roles : employeeRoles) {
+                Integer roleId = roles.getRoleId();
+                Role role = roleRepository.findById(roleId).get();
+                r.add(role.getName());
+            }
+
+            employeeDto.setRole(r);
+
+            return ResponseEntity.ok().body(employeeDto);
+*/
 
     @Override
     public ResponseEntity<?> update(UserDto userDto) {

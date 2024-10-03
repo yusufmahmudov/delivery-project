@@ -11,7 +11,7 @@ public interface UserService {
 
     ResponseEntity<?> allUser(Integer limit, Integer offset);
 
-    ResponseEntity<?> getById();
+    ResponseEntity<?> getMe();
 
     ResponseEntity<?> update(UserDto userDto);
 

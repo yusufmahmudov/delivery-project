@@ -11,7 +11,7 @@ RUN mvn dependency:go-offline -B
 COPY . .
 
 # Build the project
-RUN mvn clean package
+RUN mvn clean install
 
 # Use OpenJDK 17 to run the app
 FROM openjdk:17-jdk-alpine

@@ -6,7 +6,7 @@ services:
       - "8080:8080"
     environment:
       # Database
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/delivery
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/food_delivery
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 123
 
@@ -33,11 +33,11 @@ services:
       - ./images:/images  # Map local images directory to the container
 
   db:
-    image: postgres:13
+    image: postgres
     environment:
-      POSTGRES_DB: delivery
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
+      POSTGRES_DB: food_delivery
     ports:
       - "5432:5432"
     volumes:

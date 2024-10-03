@@ -1,36 +1,19 @@
-version: "3.8"
+version: '3.8'
 services:
   app:
-    build: .
+    image: mazmun  # replace with your application image name
+    build:
+      context: .
     ports:
       - "8080:8080"
-    environment:
-      # Database
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/food_delivery
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 123
-
-      # Redis Configuration
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
-      
-      # Application settings
-      SPRING_SECURITY_EXPIRATION_MS: 31622400000
-      SPRING_SECURITY_KEY: sdjfn2n3iunf2309hjn3uenfiun24hwe982h3iuwefkjsdsf23
-      DELIVERY_RADIUS: 10000.0
-      IMAGE_UPLOAD_PATH: /images/
-      BOT_NAME: food_delivery909_bot
-      BOT_TOKEN: 6169217907:AAGrfa9k4zG7Mhv8kLkmu7NNAmtj0H5eWfo
-      ORDER_DELETE_CRON: "0 0 2 * * ?"
-
-      # Domain
-      MAIN_DOMAIN: http://127.0.0.1:8080/api
-
     depends_on:
       - db
       - redis
-    volumes:
-      - ./images:/images  # Map local images directory to the container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/food_delivery
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123
+      SPRING_REDIS_HOST: redis
 
   db:
     image: postgres
@@ -40,15 +23,8 @@ services:
       POSTGRES_DB: food_delivery
     ports:
       - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+
   redis:
-    image: redis:6
+    image: redis
     ports:
       - "6379:6379"
-    volumes:
-      - redisdata:/data
-
-volumes:
-  pgdata:
-  redisdata:

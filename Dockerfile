@@ -2,7 +2,7 @@
 FROM maven:3.8.4-openjdk-17 as build
 WORKDIR /app
 COPY . .
-RUN mvn clean package
+RUN mvn clean install 
 
 # Use an official OpenJDK image to run the application
 FROM openjdk:17-jdk-slim
